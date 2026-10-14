@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.blend1
+.playwright-cli/
+output/playwright/.cache/
+
+*.blend2
+output/
+assets/vendor/
+
