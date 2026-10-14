@@ -1,0 +1,17 @@
+{
+  "source": "D:\\vibe-coding\\Goji-Satoru\\blender\\candidates\\gojo-hand-fit.blend",
+  "source_sha256": "7a454e281f15a26e64e187385c955550f8ea5bdcf50e277860abaa24e48b15e5",
+  "output": "D:\\vibe-coding\\Goji-Satoru\\public\\models\\candidates\\gojo-hand-fit.glb",
+  "output_sha256": "a01f8b9049949b2c41c07d0ab30024f9af5388f8e293eb768235b5ff5a6b2614",
+  "status": "CANDIDATE_NOT_ART_ACCEPTED",
+  "clips": {
+    "Idle": 4,
+    "CastBlue": 5,
+    "CastRed": 4,
+    "CastPurple": 8,
+    "RevealEyes": 2.4,
+    "CoverEyes": 2.4
+  },
+  "bones": 56,
+  "source_modified": false
+}
