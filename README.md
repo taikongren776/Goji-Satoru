@@ -1,6 +1,6 @@
 # LIMITLESS · 五条悟
 
-使用 Blender 从零制作的风格化五条悟模型，以及 Three.js 驱动的本地交互展示台。包含眼罩 / 六眼切换和「苍、赫、茈」三段技能演出。
+Blender 角色资产与 Three.js 本地交互展示台。包含眼罩 / 六眼切换和「苍、赫、茈」三段技能演出。正式角色仍是未通过视觉验收的旧版；重建候选使用许可明确的基础网格，状态见 `VALIDATION.md`。
 
 ## 打开网页
 
@@ -25,9 +25,10 @@ Windows 下双击 **`start.cmd`**。启动器会打开浏览器，默认地址�
 
 ## 工程与模型
 
-- `blender/gojo.blend`：Blender 5.2.1 源文件；角色网格、材质、38 个骨骼、四个 Action 和预览灯光均可编辑。
-- `public/models/gojo.glb`：网页模型，约 790 KiB、18,665 个三角形，内嵌材质和骨骼动画，无外部纹理依赖。
-- `scripts/build_character.py`：完整的确定性建模、绑定、动画和导出脚本。
+- `blender/gojo.blend`：保留的旧版 Blender 5.2.1 源文件，46 根骨骼、6 个 Action。
+- `public/models/gojo.glb`：保留的正式网页模型，4,406,920 字节、131,546 个三角形，无外部纹理依赖。
+- `blender/candidates/gojo-hand-fit.blend`：未验收的手部替换候选，56 根骨骼；肩部、头部和服装仍为旧版。
+- `scripts/build_character.py`：已改为候选导出入口，不再生成核心人物网格。
 - `src/experience.ts`：加载、卡通材质、镜头、场景与碎石运动。
 - `src/effects.ts`：能量球、旋涡粒子、冲击波和紫色能量轨迹。
 - `src/timeline.ts`：技能状态与统一演出时间轴。
@@ -35,7 +36,7 @@ Windows 下双击 **`start.cmd`**。启动器会打开浏览器，默认地址�
 
 GLB 为米制，Y 轴向上、正 Z 朝前、脚底位于原点。技能挂点为 `FX_Hand_L`、`FX_Hand_R`、`FX_Center`；`Blindfold` 父节点负责眼罩显隐。动画名称固定为 `Idle`（4 秒）、`CastBlue`（5 秒）、`CastRed`（4 秒）、`CastPurple`（8 秒）。网页按材质名称重建卡通材质，能量特效在网页运行时生成。
 
-Blender 内保留了预览相机与灯光，默认待机姿势、佩戴眼罩。切换 Action 可以编辑施法动作；重新运行建模脚本会重建源文件，因此手工修改后请另存新文件。
+Blender 内保留预览相机与灯光。切换 Action 可以编辑动作；导出脚本只读取源文件，不保存或覆盖源工程。资产导入和手部拟合脚本是实验加工工具，会重写各自的隔离候选；人工编辑前应另存为新的制作源文件，不能再次拟合覆盖手工修改。
 
 ## 开发与重建
 
@@ -50,15 +51,16 @@ npm run build
 
 开发预览默认 <http://127.0.0.1:5173/>。源码改动后运行 `npm run build`，`start.cmd` 才会加载最新构建。
 
-重新生成 Blender 模型和预览图：
+旧的完整程序化角色生成器已停用。`build_character.py` 现在只转交已制作资产的候选导出；旧实现保存在 Git 基线 `3e6e5ab`，不得作为核心建模路线继续使用。
+
+导出已制作的候选模型（不会覆盖正式资源）：
 
 ```powershell
-& 'C:\Users\48749\AppData\Local\Programs\Blender Foundation\Blender 5.2\blender.exe' --background --python scripts/build_character.py
-npm run validate:model
-npm run build
+& 'C:\Users\48749\AppData\Local\Programs\Blender Foundation\Blender 5.2\blender.exe' --background --python-exit-code 2 --python scripts/export_character.py -- --source blender/candidates/gojo-hand-fit.blend --output public/models/candidates/gojo-hand-fit.glb
+node scripts/validate-model.mjs public/models/candidates/gojo-hand-fit.glb
 ```
 
-其他电脑请替换 Blender 可执行文件路径。模型生成不依赖 Blender MCP 连接、在线生成服务或第三方角色模型。
+其他电脑请替换 Blender 可执行文件路径。候选使用 MakeHuman 官方 CC0 基础网格，许可与固定版本记录见 `assets/licenses/makehuman/`。它尚未通过美术与变形验收，不是正式角色。
 
 ## 运行范围
 

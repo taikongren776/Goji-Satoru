@@ -7,4 +7,6 @@ output/playwright/.cache/
 *.blend2
 output/
 assets/vendor/
+__pycache__/
+*.pyc
 

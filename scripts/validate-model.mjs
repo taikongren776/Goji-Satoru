@@ -1,6 +1,6 @@
 import {readFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
-const file=new URL('../public/models/gojo.glb',import.meta.url);
+const file=process.argv[2] || new URL('../public/models/gojo.glb',import.meta.url);
 const buffer=readFileSync(file);
 assert.equal(buffer.toString('ascii',0,4),'glTF');assert.equal(buffer.readUInt32LE(4),2);
 assert.equal(buffer.length,buffer.readUInt32LE(8));
@@ -14,11 +14,12 @@ for(const [name,duration] of Object.entries(expected)){
 }
 for(const name of ['Blindfold','FX_Hand_L','FX_Hand_R','FX_Center'])assert.ok(json.nodes.some(n=>n.name===name),`missing ${name}`);
 assert.ok(json.skins.length>0,'must contain a skinned rig');
-assert.equal(json.skins[0].joints.length,46,'body and three phalanges for each long finger');
+assert.ok(json.skins.every(s=>s.joints.length>0),'every skin must have joints');
+for(const name of ['Hand.L','Hand.R','UpperArm.L','UpperArm.R'])assert.ok(json.nodes.some(n=>n.name===name),`missing canonical joint ${name}`);
 const eyes=json.meshes.find(m=>m.name.startsWith('Eye white'));
 assert.ok(eyes?.primitives.some(p=>p.targets?.length),'Blink morph target must be exported');
 const blindfold=json.nodes.find(n=>n.name==='Blindfold');assert.ok(blindfold.children?.length,'blindfold must own the mesh for visibility control');
 const triangles=json.meshes.flatMap(m=>m.primitives).reduce((sum,p)=>sum+(p.indices!==undefined?json.accessors[p.indices].count/3:0),0);
-const report={file:'public/models/gojo.glb',bytes:buffer.length,triangles,meshes:json.meshes.length,joints:json.skins[0].joints.length,animations:Object.keys(expected),externalResources:json.images?.filter(i=>i.uri)||[]};
+const report={file:process.argv[2]||'public/models/gojo.glb',bytes:buffer.length,triangles,meshes:json.meshes.length,joints:json.skins[0].joints.length,animations:Object.keys(expected),externalResources:json.images?.filter(i=>i.uri)||[]};
 assert.equal(report.externalResources.length,0,'GLB must be self-contained');
 console.log(JSON.stringify(report,null,2));

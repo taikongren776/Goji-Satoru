@@ -11,6 +11,13 @@
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "validate:model": "node scripts/validate-model.mjs"
   },
-  "dependencies": { "three": "^0.180.0" },
-  "devDependencies": { "@types/three": "^0.180.0", "typescript": "^5.9.3", "vite": "^7.1.9" }
+  "dependencies": {
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.180.0",
+    "playwright": "^1.64.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9"
+  }
 }
