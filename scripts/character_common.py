@@ -12,6 +12,13 @@ CASES = [('rest', None, 0), ('open', None, 0), ('half-fist', None, 0),
          ('shoulder-side', None, 0), ('shoulder-high', None, 0),
          ('shoulder-rotate', None, 0), ('wrist-flexion', None, 0), ('wrist-twist', None, 0)]
 
+# A2 extends evidence coverage without removing any A1 cases.
+CASES += [(name,None,0) for name in ('thumb-open','thumb-index','thumb-middle','fist-palm','half-fist-palm','elbow-bend')]
+CASES += [(f'purple-{f}','CastPurple',f) for f in (31,73,90,108,120,138,144,152,185,210)]
+CASES += [(f'shoulder-{motion}-{view}',None,0)
+          for motion in ('natural','front-45','front-90','front-120','side-45','side-90','side-120','rotation')
+          for view in ('frontview','sideview','threequarter','close')]
+
 def get_rig():
     rigs = [o for o in bpy.context.scene.objects if o.type == 'ARMATURE']
     if len(rigs) != 1:
@@ -49,6 +56,12 @@ def pose_case(rig, case):
         return
     neutral(rig)
     ref = is_reference(rig)
+    hand_kind={'thumb-open':'open','thumb-index':'thumb-index','thumb-middle':'thumb-middle','fist-palm':'fist','half-fist-palm':'half-fist'}.get(label,label)
+    if hand_kind in ('half-fist','fist','open','thumb-index','thumb-middle') and 'phase2_hand_poses' in rig:
+        from phase2_kinematics import apply_library
+        for side in ('L','R'):apply_library(rig,side,hand_kind)
+        return
+    if label in ('fist-palm','half-fist-palm'):label=hand_kind
     if label in ('half-fist', 'fist'):
         strength = .5 if label == 'half-fist' else 1
         for side in ('L', 'R'):
@@ -59,6 +72,22 @@ def pose_case(rig, case):
                     angle = (0.4 if digit == 1 else (0.85, 1.15, .65)[joint-1]) * strength
                     rig.pose.bones[name].rotation_quaternion = Quaternion((1, 0, 0), angle)
     if label.startswith('shoulder'):
+        if any(label.endswith('-'+v) for v in ('frontview','sideview','threequarter','close')):
+            from phase2_kinematics import aim_bone
+            motion=label.removeprefix('shoulder-').rsplit('-',1)[0]
+            for side in ('L','R'):
+                sign=1 if side=='L' else -1
+                if motion in ('natural','rotation'):desired=Vector((sign*.08,0,-1))
+                else:
+                    plane,angle=motion.split('-');theta=math.radians(float(angle))
+                    desired=Vector((0,-math.sin(theta),-math.cos(theta))) if plane=='front' else Vector((sign*math.sin(theta),0,-math.cos(theta)))
+                arm_name=('upperarm01.' if ref else 'UpperArm.')+side
+                aim_bone(rig,arm_name,desired)
+                aim_bone(rig,('lowerarm01.' if ref else 'Forearm.')+side,desired)
+                if ref:aim_bone(rig,'lowerarm02.'+side,desired)
+                if motion=='rotation':
+                    b=rig.pose.bones[arm_name];b.rotation_quaternion=b.rotation_quaternion@Quaternion((0,1,0),math.radians(65))
+            bpy.context.view_layer.update();return
         for side in ('L', 'R'):
             name = f'upperarm01.{side}' if ref else f'UpperArm.{side}'
             bone = rig.pose.bones[name]
@@ -74,6 +103,9 @@ def pose_case(rig, case):
         for side in ('L','R'):
             bone=rig.pose.bones[('wrist.' if ref else 'Hand.')+side]
             bone.rotation_quaternion=Quaternion((1,0,0) if label=='wrist-flexion' else (0,1,0),math.radians(65))
+    if label=='elbow-bend':
+        from phase2_kinematics import aim_bone
+        for side in ('L','R'):aim_bone(rig,('lowerarm01.' if ref else 'Forearm.')+side,(0,-1,.4))
     bpy.context.view_layer.update()
 
 def diagnostic_materials():
@@ -97,6 +129,15 @@ def world_vertices(obj):
     return result
 
 def framing(rig, label):
+    if label.startswith('purple'):
+        target=Vector((0,-.22,1.43));return target,target+Vector((-.6,-2,.25)),.78
+    if label.startswith('shoulder-') and any(label.endswith('-'+v) for v in ('frontview','sideview','threequarter','close')):
+        view=label.rsplit('-',1)[1];target=Vector((0,0,1.38))
+        offset={'frontview':(0,-2,.08),'sideview':(-2,0,.08),'threequarter':(-1.5,-2,.25),'close':(-1,-2,.3)}[view]
+        if view=='close':target=Vector((-.19,0,1.41))
+        return target,target+Vector(offset),.64 if view=='close' else 1.05
+    if label=='elbow-bend':
+        target=Vector((-.27,-.05,1.24));return target,target+Vector((-1,-2,.2)),.65
     if label.startswith('shoulder'):
         bone = rig.pose.bones['upperarm01.R' if is_reference(rig) else 'UpperArm.R']
         target = rig.matrix_world @ bone.head
@@ -105,6 +146,8 @@ def framing(rig, label):
     target = rig.matrix_world @ (bone.head.lerp(bone.tail, .8))
     # Fixed offset in hand coordinates avoids changing camera when framing a curled hand.
     target += rig.matrix_world.to_3x3() @ bone.matrix.to_3x3() @ Vector((0, .025, 0))
+    if label.endswith('-palm') or label.startswith('thumb'):
+        return target,target+Vector((-.25,1,.1)),.27
     return target, target + Vector((-.25, -1.0, .30)), .27
 
 def write_json(path, data):

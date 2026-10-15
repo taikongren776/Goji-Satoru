@@ -112,7 +112,7 @@ def main():
             'rig':{'name':rig.name,'bones':len(rig.data.bones),'determinant':rig.matrix_world.determinant(),'bones_detail':{b.name:{'parent':b.parent.name if b.parent else None,'rest_matrix':[list(row) for row in b.matrix_local]} for b in rig.data.bones}},
             'meshes':{d['object'].name:d['public'] for d in meshes},'clips':{},'diagnostic_poses':{},'missing_clips':[]}
     blockers=0;reviews=0
-    for name in ('CastBlue','CastRed','CastPurple'):
+    for name in ('Idle','CastBlue','CastRed','CastPurple','RevealEyes','CoverEyes'):
         if name not in bpy.data.actions:report['missing_clips'].append(name);continue
         act=bpy.data.actions[name];lo,hi=map(float,act.frame_range)
         frames=set(np.arange(lo,hi+1e-6,fps/args.hz).round(6).tolist())|{hi}
@@ -145,6 +145,12 @@ def main():
         report['diagnostic_poses'][case[0]]=results
     report['blocker_samples']=blockers
     report['review_samples']=reviews
+    # Preserve global failures, but do not attribute untouched hair defects to a hand repair.
+    report['scope_results']={
+        'modified_hand_structure':{n:d['public'] for d in meshes for n in [d['object'].name] if n.startswith('HandMesh')},
+        'shoulder_garment':{'rebuilt':bool(rig.get('phase2_shoulder_status')=='REBUILT'),'status':rig.get('phase2_shoulder_status','No phase-2 shoulder reconstruction recorded')},
+        'historical_defects':{d['object'].name:d['public']['topology']['zero_area_faces'] for d in meshes if d['public']['topology']['zero_area_faces'] and not d['object'].name.startswith('HandMesh')},
+        'milestone_A':'NOT_AUTOMATICALLY_DETERMINED; requires visual review and completed shoulder/hand structure'}
     report['status']='FAIL' if blockers or report['missing_clips'] or any(d['public']['invalid_weight_count'] or d['public']['distal_interfinger_bridges'] or d['public']['topology']['zero_area_faces'] for d in meshes) else 'REVIEW_REQUIRED' if reviews else 'NUMERICAL_CHECKS_CLEAR_VISUAL_REVIEW_REQUIRED'
     if args.baseline:
         base=json.loads(Path(args.baseline).read_text(encoding='utf-8'))

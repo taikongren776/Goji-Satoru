@@ -1,0 +1,17 @@
+{
+  "source": "D:\\vibe-coding\\Goji-Satoru\\blender\\candidates\\gojo-a2-purple-spacing.blend",
+  "source_sha256": "ef83a16ac559285bbc233e9ae31a84ed3215f97c623f977271dac5d5fd0ad06a",
+  "output": "D:\\vibe-coding\\Goji-Satoru\\public\\models\\candidates\\gojo-a2-purple-spacing.glb",
+  "output_sha256": "1972211b666b2a1a94e17a53f516f5a45c08ad9b1fdda7244a6da31d9d39aae2",
+  "status": "CANDIDATE_NOT_ART_ACCEPTED",
+  "clips": {
+    "Idle": 4,
+    "CastBlue": 5,
+    "CastRed": 4,
+    "CastPurple": 8,
+    "RevealEyes": 2.4,
+    "CoverEyes": 2.4
+  },
+  "bones": 56,
+  "source_modified": false
+}

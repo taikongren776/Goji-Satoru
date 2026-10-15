@@ -1,0 +1,17 @@
+{
+  "source": "D:\\vibe-coding\\Goji-Satoru\\blender\\candidates\\gojo-a2-motion-v2.blend",
+  "source_sha256": "f399245e4253951fed79db5428768a060b168322c682bd232ad70f13222c792a",
+  "output": "D:\\vibe-coding\\Goji-Satoru\\public\\models\\candidates\\gojo-a2-motion-v2.glb",
+  "output_sha256": "1f7adfffbe892137fbb983627085129bd41ccfb0422ca1cb79246be9acaa5aac",
+  "status": "CANDIDATE_NOT_ART_ACCEPTED",
+  "clips": {
+    "Idle": 4,
+    "CastBlue": 5,
+    "CastRed": 4,
+    "CastPurple": 8,
+    "RevealEyes": 2.4,
+    "CoverEyes": 2.4
+  },
+  "bones": 56,
+  "source_modified": false
+}

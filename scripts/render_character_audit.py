@@ -8,10 +8,23 @@ from mathutils import Vector
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from character_common import CASES,get_rig,pose_case,neutral,framing,diagnostic_materials,write_json
 
-p=argparse.ArgumentParser();p.add_argument('--asset',required=True);p.add_argument('--out',required=True);p.add_argument('--size',type=int,default=900);p.add_argument('--samples',type=int,default=32);p.add_argument('--cases',default='');p.add_argument('--export-dir');p.add_argument('--wire',action='store_true');p.add_argument('--report')
+p=argparse.ArgumentParser();p.add_argument('--asset',required=True);p.add_argument('--out',required=True);p.add_argument('--size',type=int,default=900);p.add_argument('--samples',type=int,default=32);p.add_argument('--cases',default='');p.add_argument('--export-dir');p.add_argument('--wire',action='store_true');p.add_argument('--report');p.add_argument('--camera-manifest');p.add_argument('--no-geometry',action='store_true');p.add_argument('--weights')
 args=p.parse_args(sys.argv[sys.argv.index('--')+1:]);asset=Path(args.asset).resolve();out=Path(args.out).resolve();out.mkdir(parents=True,exist_ok=True)
 bpy.ops.wm.open_mainfile(filepath=str(asset));rig=get_rig();scene=bpy.context.scene
 diagnostic_materials()
+if args.no_geometry and args.export_dir:raise ValueError('GLB parity export requires vertex geometry in the manifest')
+if args.weights:
+    for obj in bpy.context.scene.objects:
+        if obj.type!='MESH':continue
+        attr=obj.data.color_attributes.new(name='AuditWeight',type='FLOAT_COLOR',domain='POINT')
+        group=obj.vertex_groups.get(args.weights)
+        for v in obj.data.vertices:
+            weight=next((g.weight for g in v.groups if group and g.group==group.index),0)
+            attr.data[v.index].color=(weight,max(0,1-abs(weight-.5)*2)*.7,1-weight,1)
+        mat=bpy.data.materials.new('Weight_'+args.weights);mat.use_nodes=True
+        node=mat.node_tree.nodes.new('ShaderNodeVertexColor');node.layer_name='AuditWeight'
+        mat.node_tree.links.new(node.outputs['Color'],mat.node_tree.nodes['Principled BSDF'].inputs['Base Color'])
+        obj.data.materials.clear();obj.data.materials.append(mat)
 for o in list(scene.objects):
     if o.type in ('LIGHT','CAMERA'):bpy.data.objects.remove(o,do_unlink=True)
 world=bpy.data.worlds.new('AuditWorld');scene.world=world;world.use_nodes=True;world.node_tree.nodes['Background'].inputs[0].default_value=(.055,.065,.085,1);world.node_tree.nodes['Background'].inputs[1].default_value=.5
@@ -25,9 +38,11 @@ if args.wire:
     for o in list(scene.objects):
         if o.type!='MESH' or not any(m.type=='ARMATURE' for m in o.modifiers):continue
         overlay=o.copy();overlay.data=o.data.copy();scene.collection.objects.link(overlay);overlay.name=o.name+'_WIRE'
-        mat=bpy.data.materials.new('WireInk');mat.diffuse_color=(.015,.018,.02,1);overlay.data.materials.clear();overlay.data.materials.append(mat)
+        mat=bpy.data.materials.new('WireInk');mat.diffuse_color=(.015,.018,.02,1);mat.use_nodes=True;mat.node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value=mat.diffuse_color;overlay.data.materials.clear();overlay.data.materials.append(mat)
         mod=overlay.modifiers.new('WireOverlay','WIREFRAME');mod.thickness=.00025;mod.use_replace=True
 selected=[c for c in CASES if not args.cases or c[0] in args.cases.split(',')]
+if args.cases and set(args.cases.split(','))-{c[0] for c in selected}:raise ValueError('Unknown diagnostic case')
+camera_poses={c['id']:c for c in json.loads(Path(args.camera_manifest).read_text())['poses']} if args.camera_manifest else {}
 manifest={'source':str(asset),'sha256':hashlib.sha256(asset.read_bytes()).hexdigest(),'source_modified':False,'renderer':'Cycles','samples':args.samples,'size':args.size,'wire':args.wire,'poses':[],'skipped':[]}
 stored=[]
 diagnosis=json.loads(Path(args.report).read_text()) if args.report else None
@@ -36,6 +51,9 @@ for case in selected:
     if case[1] and case[1] not in bpy.data.actions:
         manifest['skipped'].append({'case':case[0],'reason':'missing production clip'});continue
     pose_case(rig,case);target,position,scale=framing(rig,case[0]);camera.location=position;camdata.ortho_scale=scale;camera.rotation_euler=(target-position).to_track_quat('-Z','Y').to_euler()
+    if camera_poses:
+        fixed=camera_poses[case[0]];target=Vector(fixed['target']);position=Vector(fixed['camera']);scale=fixed['ortho_scale']
+        camera.location=position;camdata.ortho_scale=scale;camera.rotation_euler=(target-position).to_track_quat('-Z','Y').to_euler()
     for marker in markers:bpy.data.objects.remove(marker,do_unlink=True)
     markers=[]
     if diagnosis:
@@ -60,12 +78,14 @@ for case in selected:
     # World positions are reference data for independent Three.js skinning verification.
     vertices={}
     for o in scene.objects:
+        if args.no_geometry:break
         if o.type!='MESH' or not any(m.type=='ARMATURE' for m in o.modifiers) or o.name.endswith('_WIRE'):continue
         ev=o.evaluated_get(bpy.context.evaluated_depsgraph_get());me=ev.to_mesh()
         vertices[o.name]=[[*(ev.matrix_world@v.co)] for v in me.vertices];ev.to_mesh_clear()
     stored.append((case[0],transforms))
     sockets={name:list(bpy.data.objects[name].matrix_world.translation) for name in ('FX_Hand_L','FX_Hand_R','FX_Center') if name in bpy.data.objects}
-    manifest['poses'].append({'id':case[0],'source_clip':case[1],'source_frame':case[2],'camera':list(position),'target':list(target),'ortho_scale':scale,'vertices_blender_world':vertices,'sockets_blender_world':sockets})
+    support='UNSUPPORTED_NEUTRAL_SHOWN' if case[0] in ('thumb-index','thumb-middle') and 'phase2_hand_poses' not in rig else 'POSE_APPLIED'
+    manifest['poses'].append({'id':case[0],'pose_support':support,'source_clip':case[1],'source_frame':case[2],'camera':list(position),'target':list(target),'ortho_scale':scale,'vertices_blender_world':vertices,'sockets_blender_world':sockets})
 if args.export_dir:
     export=Path(args.export_dir).resolve();export.mkdir(parents=True,exist_ok=True)
     # Add diagnostic actions using captured source poses. This tests exporter/skinning,

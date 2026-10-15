@@ -2,13 +2,15 @@ import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
 import path from 'node:path';
-const out='output/milestone-a';await mkdir(out,{recursive:true});
+import {parseArgs} from 'node:util';
+const {values}=parseArgs({options:{candidate:{type:'string',default:'public/models/candidates/gojo-hand-fit.glb'},out:{type:'string',default:'output/milestone-a'},url:{type:'string',default:'http://127.0.0.1:5173'}}});
+const out=values.out;await mkdir(out,{recursive:true});
 const browser=await chromium.launch({channel:'msedge',headless:true});const reports=[];
 try{
   for(const candidate of [false,true]){
     const page=await browser.newPage({viewport:{width:1280,height:900}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
-    if(candidate)await page.route('**/models/gojo.glb',route=>route.fulfill({path:path.resolve('public/models/candidates/gojo-hand-fit.glb'),contentType:'model/gltf-binary'}));
-    await page.goto('http://127.0.0.1:5173');await page.waitForFunction(()=>window.__LIMITLESS__?.ready,null,{timeout:60000});
+    if(candidate)await page.route('**/models/gojo.glb',route=>route.fulfill({path:path.resolve(values.candidate),contentType:'model/gltf-binary'}));
+    await page.goto(values.url);await page.waitForFunction(()=>window.__LIMITLESS__?.ready,null,{timeout:60000});
     const before=await page.evaluate(()=>window.__LIMITLESS__);assert.equal(before.clips.length,6);
     const idle=()=>page.waitForFunction(()=>!window.__LIMITLESS__.skill&&!window.__LIMITLESS__.activity,null,{timeout:45000});
     await page.keyboard.press('1');await page.waitForFunction(()=>window.__LIMITLESS__.skill==='blue');
@@ -29,12 +31,12 @@ try{
     // Compare repeated complete effects after warm-up, not first load vs first cast.
     await page.locator('[data-id="purple"]').click();await page.waitForFunction(()=>window.__LIMITLESS__.skill==='purple');await idle();
     const after=await page.evaluate(()=>window.__LIMITLESS__);assert.equal(after.ready,true);assert.equal(errors.length,0);assert.ok(after.geometries<=afterWarmup.geometries);
-    reports.push({asset:candidate?'candidate via request interception; formal model unchanged':'formal baseline',status:'PASS',checks:['load six clips','keyboard trigger','conflict rejection','disabled buttons','Esc cancel','red button','reveal/cover','purple complete','low quality','reduced motion','camera reset','resize','stable geometry count after warm-up'],before,afterWarmup,after,pageErrors:errors});
+    reports.push({asset:candidate?values.candidate:'public/models/gojo.glb',loadedVia:candidate?'request interception; formal model unchanged':'application default',status:'PASS',checks:['load six clips','keyboard trigger','conflict rejection','disabled buttons','Esc cancel','red button','reveal/cover','purple complete','low quality','reduced motion','camera reset','resize','stable geometry count after warm-up'],before,afterWarmup,after,pageErrors:errors});
     await page.close();
   }
   const page=await browser.newPage();let failed=false;
   await page.route('**/models/gojo.glb',route=>{if(!failed){failed=true;return route.abort('failed');}return route.continue();});
-  await page.goto('http://127.0.0.1:5173');await page.locator('#retry').waitFor({state:'visible'});await page.locator('#retry').click();await page.waitForFunction(()=>window.__LIMITLESS__?.ready,null,{timeout:60000});
+  await page.goto(values.url);await page.locator('#retry').waitFor({state:'visible'});await page.locator('#retry').click();await page.waitForFunction(()=>window.__LIMITLESS__?.ready,null,{timeout:60000});
   reports.push({check:'load failure and retry',status:'PASS'});await page.close();
 }finally{await writeFile(`${out}/application-smoke.json`,JSON.stringify(reports,null,2));await browser.close();}
 console.log(JSON.stringify(reports.map(({asset,check,status})=>({asset,check,status})),null,2));
