@@ -97,7 +97,7 @@ export class Experience {
     const rim = new THREE.DirectionalLight(0x9dbbff, 1.7);rim.position.set(1.5, 3, -3);this.scene.add(rim);
     const fill = new THREE.DirectionalLight(0xd7e8ff, .7);fill.position.set(3,1,2);this.scene.add(fill);
 
-    const stage = new THREE.Mesh(new THREE.CylinderGeometry(1.03,1.08,.065,96),new THREE.MeshStandardMaterial({color:0x17212c,roughness:.75,metalness:.42}));
+    const stage = new THREE.Mesh(new THREE.CylinderGeometry(1.03,1.08,.065,96),new THREE.MeshStandardMaterial({color:0x17212c,roughness:.94,metalness:.08}));
     stage.position.y=-.031;stage.receiveShadow=true;this.scene.add(stage);
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(80,80),new THREE.ShadowMaterial({color:0x000000,opacity:.25}));
     floor.rotation.x=-Math.PI/2;floor.position.y=-.067;floor.receiveShadow=true;this.scene.add(floor);
@@ -135,7 +135,7 @@ export class Experience {
     this.composer=new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene,this.camera));
     this.distortion=new ShaderPass(gravityDistortionShader);this.composer.addPass(this.distortion);
-    this.bloom=new UnrealBloomPass(new THREE.Vector2(1,1),.38,.52,2.1);
+    this.bloom=new UnrealBloomPass(new THREE.Vector2(1,1),this.reduced?.10:.26,.35,1.65);
     // The stock bloom forces alpha to 1 and creates a black rectangle over the
     // page. Carry actual glow coverage through the blur and compose it over alpha.
     for(const material of this.bloom.separableBlurMaterials){
@@ -199,10 +199,10 @@ export class Experience {
     if(!this.returning)this.returning={time:0,weight:0,position:this.camera.position.clone(),target:this.controls.target.clone(),fov:this.camera.fov};
     this.controls.enabled=false;this.callbacks.state(null,null,0,'return');
   }
-  setReduced(value:boolean):void {this.reduced=value;this.bloom.strength=value?.15:.4;}
+  setReduced(value:boolean):void {this.reduced=value;this.bloom.strength=value?.10:.26;}
   setQuality(value:'high'|'low'):void {this.low=value==='low';this.bloom.enabled=!this.low;this.resize();}
   get reducedMotion():boolean{return this.reduced;}
-  get diagnostics(){const memory=(performance as Performance&{memory?:{usedJSHeapSize:number}}).memory;return{character:this.character?{id:this.character.manifest.id,animation:this.character.state.animation,skill:this.character.state.skill,progress:this.character.state.progress,blindfold:this.character.state.blindfold,sockets:Object.fromEntries((['FX_Hand_L','FX_Hand_R','FX_Center'] as const).map(n=>[n,this.character!.socket(n).toArray()]))}:null,ready:this.ready,skill:this.timeline.active,time:this.timeline.elapsed,phase:this.timeline.phase,activity:this.appearance.active?this.appearance.clip:this.returning?'return':null,fps:this.latestFps,loadMs:this.loadMs,heapMB:memory?Math.round(memory.usedJSHeapSize/1048576*10)/10:null,clips:[...this.actions.keys()],camera:this.camera.position.toArray(),target:this.controls.target.toArray(),eyesVisible:this.appearance.visible,drawCalls:this.renderer.info.render.calls,triangles:this.renderer.info.render.triangles,geometries:this.renderer.info.memory.geometries,textures:this.renderer.info.memory.textures,quality:this.low?'low':'high',reduced:this.reduced};}
+  get diagnostics(){const memory=(performance as Performance&{memory?:{usedJSHeapSize:number}}).memory;return{effects:this.effects.diagnostics,character:this.character?{id:this.character.manifest.id,animation:this.character.state.animation,skill:this.character.state.skill,progress:this.character.state.progress,blindfold:this.character.state.blindfold,sockets:Object.fromEntries((['FX_Hand_L','FX_Hand_R','FX_Center'] as const).map(n=>[n,this.character!.socket(n).toArray()]))}:null,ready:this.ready,skill:this.timeline.active,time:this.timeline.elapsed,phase:this.timeline.phase,activity:this.appearance.active?this.appearance.clip:this.returning?'return':null,fps:this.latestFps,loadMs:this.loadMs,heapMB:memory?Math.round(memory.usedJSHeapSize/1048576*10)/10:null,clips:[...this.actions.keys()],camera:this.camera.position.toArray(),target:this.controls.target.toArray(),eyesVisible:this.appearance.visible,drawCalls:this.renderer.info.render.calls,triangles:this.renderer.info.render.triangles,geometries:this.renderer.info.memory.geometries,textures:this.renderer.info.memory.textures,quality:this.low?'low':'high',reduced:this.reduced};}
 
   private resize():void {
     const width=Math.max(1,this.container.clientWidth),height=Math.max(1,this.container.clientHeight);

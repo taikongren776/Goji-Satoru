@@ -1,4 +1,6 @@
-# Character asset status — frozen at A4
+# Character asset status — FAST TRACK RESET
+
+2026-10-17：用户已终止Snow专业重建和美术委托路线。当前采用fallback C，正式旧角色仅作临时资产，继续推进独立VFX；没有把角色美术状态改成通过。一次免费CC0 VRM男性样例已实际渲染，未批准替换。最新执行结果见项目根目录 `FAST-TRACK.md`。以下A4冻结记录作为历史保留，不构成继续Snow制作或委托的指令。
 
 **Milestone A — BLOCKED BY ART ASSET QUALITY**
 
