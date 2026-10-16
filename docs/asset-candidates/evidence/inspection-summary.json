@@ -1,0 +1,335 @@
+{
+  "date": "2026-10-16",
+  "baseline": "a13173c",
+  "status": "BLOCKED BY ART ASSET QUALITY",
+  "candidateCount": 3,
+  "newModelsAcquired": 0,
+  "newProductionAssets": 0,
+  "frozen": {
+    "existingFileCount": 107,
+    "binaryAssetCount": 15,
+    "allUnchanged": true,
+    "binary": [
+      {
+        "file": "blender/candidates/a3-snow-lbs-probe.blend",
+        "sha256": "96cdf145193389a147e3f74e93f17b2e76e215403f67045c01c0219484057807"
+      },
+      {
+        "file": "blender/candidates/a3-snow-shoulder-study.blend",
+        "sha256": "6e73236b51d22d1a3c98dd77f567cd155326351d32ce949fac03b5431665d6db"
+      },
+      {
+        "file": "blender/candidates/gojo-a2-motion-study.blend",
+        "sha256": "f9fd605ddec22b83e7eb6e8c957f51ecdcc525aed5295a933c8e6381c1071bb1"
+      },
+      {
+        "file": "blender/candidates/gojo-a2-motion-v2.blend",
+        "sha256": "f399245e4253951fed79db5428768a060b168322c682bd232ad70f13222c792a"
+      },
+      {
+        "file": "blender/candidates/gojo-a2-purple-spacing.blend",
+        "sha256": "ef83a16ac559285bbc233e9ae31a84ed3215f97c623f977271dac5d5fd0ad06a"
+      },
+      {
+        "file": "blender/candidates/gojo-a3-thumb-distal.blend",
+        "sha256": "d055cbeb37ab447674c4cbcd3486a04edc4db51a7eec27f66df9e71a42bca4e8"
+      },
+      {
+        "file": "blender/candidates/gojo-hand-fit.blend",
+        "sha256": "7a454e281f15a26e64e187385c955550f8ea5bdcf50e277860abaa24e48b15e5"
+      },
+      {
+        "file": "blender/candidates/makehuman-reference.blend",
+        "sha256": "4fd5479c6566418e5623757703b4eee7a85a00a7abd0cb712fecc98ff12e4262"
+      },
+      {
+        "file": "blender/gojo.blend",
+        "sha256": "29d8bceac5c59fd3d28f08c2ec1d5c81076b40e1134abfa6d13b3c70fce2d65e"
+      },
+      {
+        "file": "public/models/candidates/gojo-a2-motion-v2.glb",
+        "sha256": "1f7adfffbe892137fbb983627085129bd41ccfb0422ca1cb79246be9acaa5aac"
+      },
+      {
+        "file": "public/models/candidates/gojo-a2-purple-spacing.glb",
+        "sha256": "1972211b666b2a1a94e17a53f516f5a45c08ad9b1fdda7244a6da31d9d39aae2"
+      },
+      {
+        "file": "public/models/candidates/gojo-a3-thumb-distal.glb",
+        "sha256": "f32ad98d87098b01cabca4bb0a0781212c4ed8a73b2486cdf0f2e1547db216e1"
+      },
+      {
+        "file": "public/models/candidates/gojo-hand-fit.glb",
+        "sha256": "a01f8b9049949b2c41c07d0ab30024f9af5388f8e293eb768235b5ff5a6b2614"
+      },
+      {
+        "file": "public/models/character-production/fixtures/gojo-final.glb",
+        "sha256": "871a1d217b0dcbf6da219957fb60faf557a92906555c55e63d8f8274f2569898"
+      },
+      {
+        "file": "public/models/gojo.glb",
+        "sha256": "79c057bb6592722466cd794a6247cdf4e3c4f1d2fb48738412584512f4a33d7e"
+      }
+    ]
+  },
+  "snow": {
+    "source": "assets/vendor/snow/extracted/Snow/snow_v4.2.blend",
+    "sha256": "80fd0a81bca90f0efdcdcb98422df0e198ae57f4a1c239e13fb795922779b1fc",
+    "sourceUnchanged": true,
+    "viewCount": 20,
+    "bones": 1494,
+    "deformBones": 290,
+    "segmentedBones": 113,
+    "meshes": [
+      {
+        "name": "GEO-snow-body",
+        "vertices": 5828,
+        "faces": 5771,
+        "quads": 5767,
+        "uvLayers": [
+          "UVMap",
+          "tattoo_light_map"
+        ],
+        "materials": [
+          "snow.skin"
+        ],
+        "shapeKeys": 32,
+        "modifiers": [
+          {
+            "type": "ARMATURE",
+            "name": "Armature",
+            "render": true,
+            "preserveVolume": true,
+            "subdivision": null
+          },
+          {
+            "type": "CORRECTIVE_SMOOTH",
+            "name": "CorrectiveSmooth",
+            "render": true,
+            "preserveVolume": null,
+            "subdivision": null
+          },
+          {
+            "type": "MASK",
+            "name": "Mask Body",
+            "render": true,
+            "preserveVolume": null,
+            "subdivision": null
+          },
+          {
+            "type": "MASK",
+            "name": "Mask Left Arm",
+            "render": false,
+            "preserveVolume": null,
+            "subdivision": null
+          },
+          {
+            "type": "MASK",
+            "name": "Mask Right Arm",
+            "render": false,
+            "preserveVolume": null,
+            "subdivision": null
+          },
+          {
+            "type": "SUBSURF",
+            "name": "Subdivision",
+            "render": true,
+            "preserveVolume": null,
+            "subdivision": 2
+          }
+        ],
+        "maxDeformInfluences": 6,
+        "verticesOver4Influences": 20,
+        "rawBounds": {
+          "min": [
+            -0.8936992883682251,
+            -0.18988433480262756,
+            -0.011281062848865986
+          ],
+          "max": [
+            0.8936992883682251,
+            0.09927413612604141,
+            1.788532018661499
+          ]
+        }
+      },
+      {
+        "name": "GEO-snow-head",
+        "vertices": 3719,
+        "faces": 3633,
+        "quads": 3631,
+        "uvLayers": [
+          "UVMap",
+          "tattoo_light_map"
+        ],
+        "materials": [
+          "snow.skin",
+          "snow.skin_darker",
+          "snow.skin_upper_lip",
+          "snow.skin_lower_lip"
+        ],
+        "shapeKeys": 50,
+        "modifiers": [
+          {
+            "type": "ARMATURE",
+            "name": "Armature",
+            "render": true,
+            "preserveVolume": false,
+            "subdivision": null
+          },
+          {
+            "type": "CORRECTIVE_SMOOTH",
+            "name": "CorrectiveSmooth",
+            "render": false,
+            "preserveVolume": null,
+            "subdivision": null
+          },
+          {
+            "type": "LATTICE",
+            "name": "Lattice Cheek L",
+            "render": true,
+            "preserveVolume": null,
+            "subdivision": null
+          },
+          {
+            "type": "LATTICE",
+            "name": "Lattice Cheek R",
+            "render": true,
+            "preserveVolume": null,
+            "subdivision": null
+          },
+          {
+            "type": "LATTICE",
+            "name": "Lattice Face Mask",
+            "render": true,
+            "preserveVolume": null,
+            "subdivision": null
+          },
+          {
+            "type": "SUBSURF",
+            "name": "Subdivision",
+            "render": true,
+            "preserveVolume": null,
+            "subdivision": 2
+          }
+        ],
+        "maxDeformInfluences": 14,
+        "verticesOver4Influences": 556,
+        "rawBounds": {
+          "min": [
+            -0.15452896058559418,
+            -0.1855236142873764,
+            1.338680624961853
+          ],
+          "max": [
+            0.15452896058559418,
+            0.08429121971130371,
+            1.763067364692688
+          ]
+        }
+      },
+      {
+        "name": "GEO-snow-shirt",
+        "vertices": 1839,
+        "faces": 1783,
+        "quads": 1783,
+        "uvLayers": [
+          "UVMap"
+        ],
+        "materials": [
+          "snow.shirt"
+        ],
+        "shapeKeys": 10,
+        "modifiers": [
+          {
+            "type": "ARMATURE",
+            "name": "Armature",
+            "render": true,
+            "preserveVolume": true,
+            "subdivision": null
+          },
+          {
+            "type": "CORRECTIVE_SMOOTH",
+            "name": "CorrectiveSmooth",
+            "render": true,
+            "preserveVolume": null,
+            "subdivision": null
+          },
+          {
+            "type": "MASK",
+            "name": "Mask",
+            "render": true,
+            "preserveVolume": null,
+            "subdivision": null
+          },
+          {
+            "type": "MASK",
+            "name": "Mask Left Arm",
+            "render": false,
+            "preserveVolume": null,
+            "subdivision": null
+          },
+          {
+            "type": "MASK",
+            "name": "Mask Right Arm",
+            "render": false,
+            "preserveVolume": null,
+            "subdivision": null
+          },
+          {
+            "type": "SUBSURF",
+            "name": "Subdivision",
+            "render": true,
+            "preserveVolume": null,
+            "subdivision": 2
+          }
+        ],
+        "maxDeformInfluences": 3,
+        "verticesOver4Influences": 0,
+        "rawBounds": {
+          "min": [
+            -0.30694058537483215,
+            -0.1505836546421051,
+            0.8670365810394287
+          ],
+          "max": [
+            0.30694058537483215,
+            0.1049562394618988,
+            1.4395607709884644
+          ]
+        }
+      }
+    ],
+    "materialValidation": "NOT_PASSED: native skin UDIM loading warnings; neutral clay only"
+  },
+  "vendorEvidence": {
+    "galleryImages": 12,
+    "failedRequests": [
+      {
+        "name": "polyone-view2",
+        "url": "https://assets.superhivemarket.com/store/productimage/1176238/image/thumb-b2156b3b65d3c4ba2c4b93b3566ba1f7.jpg",
+        "error": "TimeoutError: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://assets.superhivemarket.com/store/productimage/1176238/image/thumb-b2156b3b65d3c4ba2c4b93b3566ba1f7.jpg\", waiting until \"load\"\u001b[22m\n"
+      }
+    ]
+  },
+  "decisions": [
+    {
+      "id": "01",
+      "name": "PolyOne Stylized Male",
+      "state": "HOLD_FOR_PREPURCHASE_EVIDENCE",
+      "purchased": false
+    },
+    {
+      "id": "02",
+      "name": "Reallusion CC3+ Male Base",
+      "state": "HOLD_FOR_EXPLICIT_RAW_GLB_PERMISSION",
+      "downloaded": false
+    },
+    {
+      "id": "03",
+      "name": "Blender Studio Snow v4.2",
+      "state": "AVAILABLE_FOR_PROFESSIONAL_MANUAL_ADAPTATION",
+      "artApproved": false
+    }
+  ]
+}
