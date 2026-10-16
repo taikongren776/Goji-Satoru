@@ -1,0 +1,17 @@
+{
+  "source": "D:\\vibe-coding\\Goji-Satoru\\blender\\candidates\\gojo-a3-thumb-distal.blend",
+  "source_sha256": "d055cbeb37ab447674c4cbcd3486a04edc4db51a7eec27f66df9e71a42bca4e8",
+  "output": "D:\\vibe-coding\\Goji-Satoru\\public\\models\\candidates\\gojo-a3-thumb-distal.glb",
+  "output_sha256": "f32ad98d87098b01cabca4bb0a0781212c4ed8a73b2486cdf0f2e1547db216e1",
+  "status": "CANDIDATE_NOT_ART_ACCEPTED",
+  "clips": {
+    "Idle": 4,
+    "CastBlue": 5,
+    "CastRed": 4,
+    "CastPurple": 8,
+    "RevealEyes": 2.4,
+    "CoverEyes": 2.4
+  },
+  "bones": 56,
+  "source_modified": false
+}

@@ -1,0 +1,12 @@
+{
+  "page": "https://studio.blender.org/characters/snow/v4/",
+  "download": "https://studio.blender.org/download-source/files/ba/0f/ba0fe6d810333b1d73c1c359e4dc03cb-6.zip",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "credit": "Snow Rig (CC) Blender Foundation | studio.blender.org",
+  "retrieved": "2026-10-15",
+  "source": "assets/vendor/snow/extracted/Snow/snow_v4.2.blend",
+  "source_sha256": "80fd0a81bca90f0efdcdcb98422df0e198ae57f4a1c239e13fb795922779b1fc",
+  "zip_bytes": 111580346,
+  "zip_sha256": "98d58ef3a07083ede14140bc462cccb55d317062846aa0eb652d2e4a7ac422a6",
+  "modified": "A3 collar study and lossy LBS diagnostic; not a finished Gojo asset."
+}
