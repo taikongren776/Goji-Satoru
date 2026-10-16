@@ -1,0 +1,22 @@
+{
+  "source": "public/models/candidates/gojo-a3-thumb-distal.glb",
+  "sourceSHA256": "f32ad98d87098b01cabca4bb0a0781212c4ed8a73b2486cdf0f2e1547db216e1",
+  "fixtureSHA256": "871a1d217b0dcbf6da219957fb60faf557a92906555c55e63d8f8274f2569898",
+  "binaryChunkUnchanged": true,
+  "nodesRenamed": 69,
+  "clipsRenamed": 6,
+  "leftSocketBoundTo": {
+    "node": "Artist_Node_22",
+    "offset": [
+      2.2351741790771484e-8,
+      0.06075816601514816,
+      -0.04200003668665886
+    ],
+    "rotation": [
+      1.5707962925663534,
+      -5.587935413435241e-9,
+      1.3038515755336546e-8
+    ]
+  },
+  "artStatus": "NOT_APPROVED; metadata integration fixture only"
+}

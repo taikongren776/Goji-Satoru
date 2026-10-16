@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { loadCharacterAsset } from './character-assets';
+import type { CharacterAdapter } from './character-adapter';
+import type { CharacterAnimation } from './character-contract';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
@@ -32,13 +34,9 @@ export class Experience {
   private bloom: UnrealBloomPass;
   private distortion: ShaderPass;
   private effects: TechniqueEffects;
-  private model?: THREE.Group;
-  private mixer?: THREE.AnimationMixer;
-  private actions = new Map<string, THREE.AnimationAction>();
-  private blindfold?: THREE.Object3D;
-  private leftSocket?: THREE.Object3D;
-  private rightSocket?: THREE.Object3D;
-  private centerSocket?: THREE.Object3D;
+  private character?:CharacterAdapter;
+  private get model(){return this.character?.root;}
+  private get actions():ReadonlyMap<string,THREE.AnimationAction>{return this.character?.actions??new Map();}
   private rocks: Rock[] = [];
   private rockInstances: THREE.InstancedMesh;
   private floorRing: THREE.Mesh<THREE.TorusGeometry,THREE.MeshBasicMaterial>;
@@ -61,8 +59,6 @@ export class Experience {
   private centerPoint = new THREE.Vector3();
   private temporary = new THREE.Vector3();
   private observer: ResizeObserver;
-  private eyeMeshes: THREE.Mesh[] = [];
-  private coverMaterials: THREE.Material[] = [];
   private returning?: { time: number; action?: THREE.AnimationAction; weight: number; position: THREE.Vector3; target: THREE.Vector3; fov: number };
   private loadMs = 0;
   private disposed = false;
@@ -154,54 +150,10 @@ export class Experience {
 
   async load(progress:(percent:number)=>void):Promise<void> {
     const began=performance.now();
-    const gltf=await new GLTFLoader().loadAsync(`${import.meta.env.BASE_URL}models/gojo.glb`,event=>{
-      if(event.total)progress(Math.min(95,event.loaded/event.total*95));
-    });
-    const names=['Blindfold','FX_Hand_L','FX_Hand_R','FX_Center'];
-    for(const name of names)if(!gltf.scene.getObjectByName(name))throw new Error(`模型缺少节点：${name}`);
-    for(const name of ['Idle','RevealEyes','CoverEyes',...Object.values(SKILLS).map(s=>s.clip)])if(!gltf.animations.find(a=>a.name===name))throw new Error(`模型缺少动画：${name}`);
-    this.model=gltf.scene;this.scene.add(this.model);
-    this.blindfold=this.model.getObjectByName('Blindfold');
-    this.leftSocket=this.model.getObjectByName('FX_Hand_L');
-    this.rightSocket=this.model.getObjectByName('FX_Hand_R');
-    this.centerSocket=this.model.getObjectByName('FX_Center');
-    const rampData=new Uint8Array([65,65,65,255,139,139,139,255,214,214,214,255,255,255,255,255]);
-    const ramp=new THREE.DataTexture(rampData,4,1);ramp.minFilter=ramp.magFilter=THREE.NearestFilter;ramp.needsUpdate=true;
-    const cache=new Map<string,THREE.MeshToonMaterial|THREE.MeshStandardMaterial>();
-    const meshes:THREE.Mesh[]=[];this.model.traverse(o=>{if((o as THREE.Mesh).isMesh)meshes.push(o as THREE.Mesh);});
-    const makeMaterial=(source:THREE.Material):THREE.MeshToonMaterial|THREE.MeshStandardMaterial=>{
-      if(cache.has(source.name))return cache.get(source.name)!;
-      const old=source as THREE.MeshStandardMaterial;
-      const fabric=/Uniform|Blindfold|Seam/.test(source.name);
-      const skin=/^Skin/.test(source.name);
-      const leather=/^Boot/.test(source.name);
-      const mat=fabric||skin||leather?new THREE.MeshStandardMaterial({name:source.name,color:old.color,roughness:fabric?.94:skin?.79:.72,metalness:0}):new THREE.MeshToonMaterial({name:source.name,color:old.color,gradientMap:ramp});
-      if(source.name.startsWith('SixEyes')||source.name==='EyeGlint'){
-        mat.emissive.copy(old.color);mat.emissiveIntensity=source.name==='EyeGlint'?1.35:.6;
-      }
-      if(source.name==='Uniform')mat.color.set(0x373f50);
-      if(source.name==='UniformFold')mat.color.set(0x354453);
-      if(source.name.startsWith('Hair'))mat.color.multiplyScalar(.74);
-      if(source.name==='SkinHighlight')mat.color.set(0xf0cbbb);
-      if(source.name==='Skin')mat.color.set(0xd8a995);
-      cache.set(source.name,mat);return mat;
-    };
-    const originalMaterials=new Set<THREE.Material>();
-    for(const mesh of meshes){
-      for(const mat of Array.isArray(mesh.material)?mesh.material:[mesh.material])originalMaterials.add(mat);
-      mesh.material=Array.isArray(mesh.material)?mesh.material.map(makeMaterial):makeMaterial(mesh.material);
-      mesh.castShadow=true;mesh.receiveShadow=false;mesh.frustumCulled=false;
-      if(mesh.morphTargetDictionary?.Blink!==undefined)this.eyeMeshes.push(mesh);
-    }
-    originalMaterials.forEach(m=>m.dispose());
-    this.coverMaterials=[...cache.values()].filter(m=>m.name.startsWith('Blindfold'));
-    this.coverMaterials.forEach(m=>{m.transparent=true;});
-    this.mixer=new THREE.AnimationMixer(this.model);
-    for(const clip of gltf.animations){
-      const action=this.mixer.clipAction(clip);this.actions.set(clip.name,action);
-      if(clip.name==='Idle')action.play();else{action.setLoop(THREE.LoopOnce,1);action.clampWhenFinished=true;}
-    }
-    this.model.updateMatrixWorld(true);this.ready=true;this.loadMs=Math.round(performance.now()-began);progress(100);
+    const adapter=await loadCharacterAsset(this.appearance,progress);
+    if(this.disposed){adapter.dispose();this.disposeLoadedModel(adapter.root);return;}
+    this.character=adapter;this.scene.add(adapter.root);
+    this.ready=true;this.loadMs=Math.round(performance.now()-began);progress(100);
   }
 
   start(id:SkillId):boolean {
@@ -210,7 +162,7 @@ export class Experience {
     this.controls.enableDamping=false;this.controls.update();this.controls.enableDamping=true;
     this.savedPosition.copy(this.camera.position);this.savedTarget.copy(this.controls.target);this.savedFov=this.camera.fov;
     this.controls.enabled=false;
-    const action=this.actions.get(SKILLS[id].clip)!;action.reset().play();action.paused=true;action.enabled=true;
+    this.character!.begin(SKILLS[id].clip as CharacterAnimation,id);
     this.audio.start(id);this.callbacks.state(id,'charge',0);return true;
   }
   stop():void {
@@ -222,8 +174,8 @@ export class Experience {
       this.controls.enabled=false;
     }
     this.appearance.cancel();this.applyCover(this.appearance.visible?0:1);this.callbacks.eyes(this.appearance.visible);
-    this.timeline.reset();this.effects.reset();this.audio.stop();
-    if(!this.returning){this.actions.get('Idle')?.setEffectiveWeight(1);this.controls.enabled=true;}
+    this.timeline.reset();this.character?.endSkill();this.effects.reset();this.audio.stop();
+    if(!this.returning){this.actions.get('Idle')?.setEffectiveWeight(1);this.character?.idle();this.controls.enabled=true;}
     for(const rock of this.rocks){rock.mesh.position.copy(rock.home);rock.mesh.rotation.copy(rock.rotation);rock.mesh.scale.set(rock.scale,rock.scale*.65,rock.scale*.84);}
     this.syncDebris();
     this.floorRing.material.color.set(0x739abb);
@@ -234,13 +186,13 @@ export class Experience {
     if(!this.ready||this.timeline.active||this.returning||!this.appearance.start(visible))return false;
     this.savedPosition.copy(this.camera.position);this.savedTarget.copy(this.controls.target);this.savedFov=this.camera.fov;
     this.controls.enabled=false;
-    const action=this.actions.get(this.appearance.clip)!;action.reset().play();action.paused=true;
+    this.character!.begin(this.appearance.clip as CharacterAnimation);
     this.callbacks.state(null,null,0,visible?'reveal':'cover');return true;
   }
   private applyCover(opacity:number,lift=0):void {
-    if(this.blindfold){this.blindfold.visible=opacity>.005;this.blindfold.position.y=lift;}
-    this.coverMaterials.forEach(m=>m.opacity=opacity);
+    this.character?.setCover(opacity,lift);
   }
+
   resetView():void {
     this.stop();
     this.savedPosition.copy(this.defaultPosition);this.savedTarget.copy(this.defaultTarget);this.savedFov=30;
@@ -250,7 +202,7 @@ export class Experience {
   setReduced(value:boolean):void {this.reduced=value;this.bloom.strength=value?.15:.4;}
   setQuality(value:'high'|'low'):void {this.low=value==='low';this.bloom.enabled=!this.low;this.resize();}
   get reducedMotion():boolean{return this.reduced;}
-  get diagnostics(){const memory=(performance as Performance&{memory?:{usedJSHeapSize:number}}).memory;return{ready:this.ready,skill:this.timeline.active,time:this.timeline.elapsed,phase:this.timeline.phase,activity:this.appearance.active?this.appearance.clip:this.returning?'return':null,fps:this.latestFps,loadMs:this.loadMs,heapMB:memory?Math.round(memory.usedJSHeapSize/1048576*10)/10:null,clips:[...this.actions.keys()],camera:this.camera.position.toArray(),target:this.controls.target.toArray(),eyesVisible:this.appearance.visible,drawCalls:this.renderer.info.render.calls,triangles:this.renderer.info.render.triangles,geometries:this.renderer.info.memory.geometries,textures:this.renderer.info.memory.textures,quality:this.low?'low':'high',reduced:this.reduced};}
+  get diagnostics(){const memory=(performance as Performance&{memory?:{usedJSHeapSize:number}}).memory;return{character:this.character?{id:this.character.manifest.id,animation:this.character.state.animation,skill:this.character.state.skill,progress:this.character.state.progress,blindfold:this.character.state.blindfold,sockets:Object.fromEntries((['FX_Hand_L','FX_Hand_R','FX_Center'] as const).map(n=>[n,this.character!.socket(n).toArray()]))}:null,ready:this.ready,skill:this.timeline.active,time:this.timeline.elapsed,phase:this.timeline.phase,activity:this.appearance.active?this.appearance.clip:this.returning?'return':null,fps:this.latestFps,loadMs:this.loadMs,heapMB:memory?Math.round(memory.usedJSHeapSize/1048576*10)/10:null,clips:[...this.actions.keys()],camera:this.camera.position.toArray(),target:this.controls.target.toArray(),eyesVisible:this.appearance.visible,drawCalls:this.renderer.info.render.calls,triangles:this.renderer.info.render.triangles,geometries:this.renderer.info.memory.geometries,textures:this.renderer.info.memory.textures,quality:this.low?'low':'high',reduced:this.reduced};}
 
   private resize():void {
     const width=Math.max(1,this.container.clientWidth),height=Math.max(1,this.container.clientHeight);
@@ -283,8 +235,8 @@ export class Experience {
       const action=this.actions.get(d.clip)!;
       const weight=Math.min(ease(time/.18),1-ease((time-d.duration+.22)/.22));
       action.time=time;action.setEffectiveWeight(weight);idle?.setEffectiveWeight(1-weight);
-      this.mixer?.update(0);this.model?.updateMatrixWorld(true);
-      this.leftSocket!.getWorldPosition(this.leftPoint);this.rightSocket!.getWorldPosition(this.rightPoint);this.centerSocket!.getWorldPosition(this.centerPoint);
+      this.character?.evaluate();this.model?.updateMatrixWorld(true);
+      this.character!.socket('FX_Hand_L',this.leftPoint);this.character!.socket('FX_Hand_R',this.rightPoint);this.character!.socket('FX_Center',this.centerPoint);
       this.effects.update(id,time,this.leftPoint,this.rightPoint,this.centerPoint,this.reduced);
       this.animateDebris(id,time);this.animateCamera(id,time);
       this.audio.update(time);this.callbacks.state(id,this.timeline.phase,this.timeline.progress);
@@ -295,19 +247,19 @@ export class Experience {
       const action=this.actions.get(state.clip)!;
       const weight=ease(time/.2)*(1-ease((time-2.15)/.25));
       action.time=time;action.setEffectiveWeight(weight);idle?.setEffectiveWeight(1-weight);
-      this.mixer?.update(0);
+      this.character?.evaluate();
       const reveal=ease((time-.72)/.52),cover=ease((time-1.05)/.42);
       this.applyCover(state.target?1-reveal:cover,state.target?reveal*.055:(1-cover)*.055);
       this.callbacks.eyes(state.visible);
-      if(done){action.stop();state.finish();this.applyCover(state.visible?0:1);idle?.setEffectiveWeight(1);this.controls.enabled=true;this.callbacks.state(null,null,0);}
+      if(done){action.stop();state.finish();this.character?.idle();this.applyCover(state.visible?0:1);idle?.setEffectiveWeight(1);this.controls.enabled=true;this.callbacks.state(null,null,0);}
     }else if(this.returning){
       const r=this.returning;r.time+=delta;const progress=ease(r.time/.55);
-      r.action?.setEffectiveWeight(r.weight*(1-progress));idle?.setEffectiveWeight(1-r.weight*(1-progress));this.mixer?.update(0);
+      r.action?.setEffectiveWeight(r.weight*(1-progress));idle?.setEffectiveWeight(1-r.weight*(1-progress));this.character?.evaluate();
       this.camera.position.copy(r.position).lerp(this.savedPosition,progress);this.controls.target.copy(r.target).lerp(this.savedTarget,progress);
       this.camera.fov=THREE.MathUtils.lerp(r.fov,this.savedFov,progress);this.camera.updateProjectionMatrix();this.camera.lookAt(this.controls.target);
-      if(progress===1){r.action?.stop();this.returning=undefined;this.controls.enabled=true;this.callbacks.state(null,null,0);}
+      if(progress===1){r.action?.stop();this.character?.idle();this.returning=undefined;this.controls.enabled=true;this.callbacks.state(null,null,0);}
     }else{
-      this.mixer?.update(0);
+      this.character?.evaluate();
       // Move the orbit center toward the face while zooming in, so facial
       // details remain inspectable instead of disappearing above the canvas.
       const faceFocus=.99+.61*ease((3.8-this.controls.getDistance())/1.7);
@@ -317,7 +269,7 @@ export class Experience {
     }
     const blinkPhase=this.clock%4.7;
     const blink=blinkPhase<.16?Math.sin(blinkPhase/.16*Math.PI):0;
-    for(const mesh of this.eyeMeshes)mesh.morphTargetInfluences![mesh.morphTargetDictionary!.Blink]=this.appearance.active?Math.max(blink,1-ease((this.appearance.elapsed-.85)/.40)):blink;
+    this.character?.blink(this.appearance.active?Math.max(blink,1-ease((this.appearance.elapsed-.85)/.40)):blink);
     if(!this.reduced){this.aura.rotation.y=this.clock*.025;this.aura.position.y=Math.sin(this.clock*.4)*.03;}
     this.distortion.enabled=this.effects.warpStrength>.001;
     if(this.distortion.enabled){
@@ -367,8 +319,13 @@ export class Experience {
     if(id!=='blue'){this.camera.position.x+=Math.sin(t*95)*hit*.013;this.camera.position.y+=Math.cos(t*83)*hit*.008;}
     this.camera.fov=THREE.MathUtils.lerp(this.savedFov,id==='purple'?35:32,amount);this.camera.updateProjectionMatrix();this.camera.lookAt(this.temporary);
   }
+  private disposeLoadedModel(root:THREE.Group):void {
+    const geometry=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>();
+    root.traverse(o=>{if(o instanceof THREE.Mesh){geometry.add(o.geometry);for(const m of Array.isArray(o.material)?o.material:[o.material])materials.add(m);}if(o instanceof THREE.SkinnedMesh)o.skeleton.dispose();});
+    for(const m of materials){for(const v of Object.values(m))if(v instanceof THREE.Texture)textures.add(v);m.dispose();}geometry.forEach(g=>g.dispose());textures.forEach(t=>t.dispose());
+  }
   dispose():void{
-    this.disposed=true;cancelAnimationFrame(this.raf);this.audio.dispose();this.observer.disconnect();this.controls.dispose();
+    this.character?.dispose();this.disposed=true;cancelAnimationFrame(this.raf);this.audio.dispose();this.observer.disconnect();this.controls.dispose();
     document.removeEventListener('visibilitychange',this.visibilityChanged);
     const geometries=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>();
     this.scene.traverse(o=>{const mesh=o as THREE.Mesh;if(mesh.geometry)geometries.add(mesh.geometry);if(mesh.material)for(const m of Array.isArray(mesh.material)?mesh.material:[mesh.material])materials.add(m);});

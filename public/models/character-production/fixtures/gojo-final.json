@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "id": "a4-renamed-candidate-not-art-approved",
+  "asset": "gojo-final.glb",
+  "usage": "integration-test",
+  "presentation": "authored",
+  "animations": {
+    "Idle": {
+      "clip": "Artist_Take_4",
+      "timing": "exact"
+    },
+    "CastBlue": {
+      "clip": "Artist_Take_0",
+      "timing": "exact"
+    },
+    "CastRed": {
+      "clip": "Artist_Take_2",
+      "timing": "exact"
+    },
+    "CastPurple": {
+      "clip": "Artist_Take_1",
+      "timing": "exact"
+    },
+    "RevealEyes": {
+      "clip": "Artist_Take_5",
+      "timing": "exact"
+    },
+    "CoverEyes": {
+      "clip": "Artist_Take_3",
+      "timing": "exact"
+    }
+  },
+  "nodes": {
+    "Blindfold": {
+      "node": "Artist_Node_60",
+      "mode": "fade-lift"
+    },
+    "FX_Hand_L": {
+      "node": "Artist_Node_22",
+      "offset": [
+        2.2351741790771484e-8,
+        0.06075816601514816,
+        -0.04200003668665886
+      ],
+      "rotation": [
+        1.5707962925663534,
+        -5.587935413435241e-9,
+        1.3038515755336546e-8
+      ]
+    },
+    "FX_Hand_R": {
+      "node": "Artist_Node_44"
+    },
+    "FX_Center": {
+      "node": "Artist_Node_48"
+    }
+  },
+  "blink": {
+    "target": "Blink"
+  },
+  "coordinates": {
+    "unit": "meter",
+    "up": "Y",
+    "forward": "+Z",
+    "heightRange": [
+      1.5,
+      2.1
+    ],
+    "groundTolerance": 0.02
+  }
+}

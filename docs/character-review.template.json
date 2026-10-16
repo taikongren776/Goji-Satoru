@@ -1,0 +1,107 @@
+{
+  "status": "NOT_REVIEWED",
+  "reviewer": "",
+  "reviewedAt": "",
+  "assetSha256": "",
+  "scores": {
+    "Geometry": {
+      "Head": null,
+      "Face": null,
+      "Hair": null,
+      "Hands": null,
+      "Shoulder": null,
+      "Body": null,
+      "Clothing": null
+    },
+    "Deformation": {
+      "Hands": null,
+      "Fingers": null,
+      "Thumb": null,
+      "Shoulder": null,
+      "Elbow": null,
+      "Wrist": null,
+      "Clothing": null
+    },
+    "Presentation": {
+      "Skin": null,
+      "Hair material": null,
+      "Clothing material": null,
+      "Lighting": null,
+      "Silhouette": null
+    },
+    "Animation": {
+      "Idle": null,
+      "CastBlue": null,
+      "CastRed": null,
+      "CastPurple": null,
+      "RevealEyes": null,
+      "CoverEyes": null
+    }
+  },
+  "observations": {
+    "Geometry": {
+      "Head": "",
+      "Face": "",
+      "Hair": "",
+      "Hands": "",
+      "Shoulder": "",
+      "Body": "",
+      "Clothing": ""
+    },
+    "Deformation": {
+      "Hands": "",
+      "Fingers": "",
+      "Thumb": "",
+      "Shoulder": "",
+      "Elbow": "",
+      "Wrist": "",
+      "Clothing": ""
+    },
+    "Presentation": {
+      "Skin": "",
+      "Hair material": "",
+      "Clothing material": "",
+      "Lighting": "",
+      "Silhouette": ""
+    },
+    "Animation": {
+      "Idle": "",
+      "CastBlue": "",
+      "CastRed": "",
+      "CastPurple": "",
+      "RevealEyes": "",
+      "CoverEyes": ""
+    }
+  },
+  "evidence": {
+    "front-full": "",
+    "back-full": "",
+    "left-full": "",
+    "right-full": "",
+    "45-full": "",
+    "face-close": "",
+    "hand-close": "",
+    "face-side": "",
+    "face-threequarter": "",
+    "face-up": "",
+    "face-down": "",
+    "arms-down": "",
+    "front90": "",
+    "side90": "",
+    "side120": "",
+    "elbow-bend": "",
+    "forearm-twist": "",
+    "open-hand": "",
+    "half-fist": "",
+    "fist": "",
+    "thumb-opposition": "",
+    "CastBlue": "",
+    "CastRed": "",
+    "CastPurple": "",
+    "blindfold-on": "",
+    "blindfold-off": "",
+    "RevealEyes": "",
+    "CoverEyes": ""
+  },
+  "note": "Fill only from actual model renders and playback. No automatic art acceptance."
+}
