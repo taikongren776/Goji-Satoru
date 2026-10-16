@@ -1,0 +1,347 @@
+{
+  "date": "2026-10-17",
+  "baseline": "330722c",
+  "branch": "character-rebuild",
+  "scope": "Documentation and route due diligence only; no new render or model",
+  "files": [
+    {
+      "file": "docs/asset-candidates/polyone-presale-evidence.md",
+      "sha256": "dd449de09d91cd2a2d1eb43479844f179ba098835801d6acdbd313f59a8319ed"
+    },
+    {
+      "file": "docs/asset-candidates/polyone-presale-questions.md",
+      "sha256": "be53e621de52e840e0ab4862a24dc1d8baad09acfffbdb171120d09c8c811a63"
+    },
+    {
+      "file": "docs/asset-candidates/snow-production-assessment.md",
+      "sha256": "6c1b2312971147e8b0736bc0eeaf56745145a08561598903233cfd9d58e5c787"
+    },
+    {
+      "file": "docs/asset-selection-final.md",
+      "sha256": "34f009a8251987a84aa9dfaaf697bd5afc37c13dddf169ea5c47c13a81b998f6"
+    },
+    {
+      "file": "docs/artist-production-brief.md",
+      "sha256": "ad6116a0e41934c9794a345bfb8f02cdbc393d6ca30386f3cdb3da2310a8bda7"
+    }
+  ],
+  "relativeLinks": [
+    {
+      "from": "docs/asset-candidates/polyone-presale-evidence.md",
+      "target": "docs/asset-candidates/candidate-01.md",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-candidates/polyone-presale-evidence.md",
+      "target": "output/milestone-a5/report.html",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-candidates/polyone-presale-evidence.md",
+      "target": "docs/asset-candidates/evidence/web-sources.json",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-candidates/polyone-presale-evidence.md",
+      "target": "docs/asset-candidates/polyone-presale-questions.md",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-candidates/snow-production-assessment.md",
+      "target": "assets/licenses/blender-studio-snow/source.json",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-candidates/snow-production-assessment.md",
+      "target": "assets/licenses/blender-studio-snow/README.md",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-candidates/snow-production-assessment.md",
+      "target": "assets/licenses/blender-studio-snow/CC-BY-4.0.txt",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-candidates/snow-production-assessment.md",
+      "target": "docs/asset-candidates/candidate-03.md",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-candidates/snow-production-assessment.md",
+      "target": "docs/asset-candidates/evidence/inspection-summary.json",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-candidates/snow-production-assessment.md",
+      "target": "output/milestone-a5/report.html",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-candidates/snow-production-assessment.md",
+      "target": "output/milestone-a3/summary.json",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-candidates/snow-production-assessment.md",
+      "target": "docs/artist-production-brief.md",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-selection-final.md",
+      "target": "docs/asset-candidates/polyone-presale-evidence.md",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-selection-final.md",
+      "target": "docs/asset-candidates/polyone-presale-questions.md",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-selection-final.md",
+      "target": "docs/asset-candidates/snow-production-assessment.md",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-selection-final.md",
+      "target": "docs/artist-production-brief.md",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-selection-final.md",
+      "target": "output/milestone-a5/report.html",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-selection-final.md",
+      "target": "output/milestone-a3/report.html",
+      "exists": true
+    },
+    {
+      "from": "docs/asset-selection-final.md",
+      "target": "docs/asset-candidates/evidence/a6-validation.json",
+      "exists": true
+    },
+    {
+      "from": "docs/artist-production-brief.md",
+      "target": "docs/character-art-spec.md",
+      "exists": true
+    },
+    {
+      "from": "docs/artist-production-brief.md",
+      "target": "docs/character-integration.md",
+      "exists": true
+    }
+  ],
+  "missingLinks": [],
+  "trailingWhitespace": [],
+  "referencedScripts": [
+    {
+      "file": "scripts/audit_deformation.py",
+      "exists": true
+    },
+    {
+      "file": "scripts/audit_contacts.py",
+      "exists": true
+    },
+    {
+      "file": "scripts/render_character_audit.py",
+      "exists": true
+    },
+    {
+      "file": "scripts/capture_character_audit.mjs",
+      "exists": true
+    },
+    {
+      "file": "scripts/validate-production-character.py",
+      "exists": true
+    }
+  ],
+  "binaryProtection": [
+    {
+      "file": "blender/candidates/a3-snow-lbs-probe.blend",
+      "sha256": "96cdf145193389a147e3f74e93f17b2e76e215403f67045c01c0219484057807",
+      "actual": "96cdf145193389a147e3f74e93f17b2e76e215403f67045c01c0219484057807",
+      "unchanged": true
+    },
+    {
+      "file": "blender/candidates/a3-snow-shoulder-study.blend",
+      "sha256": "6e73236b51d22d1a3c98dd77f567cd155326351d32ce949fac03b5431665d6db",
+      "actual": "6e73236b51d22d1a3c98dd77f567cd155326351d32ce949fac03b5431665d6db",
+      "unchanged": true
+    },
+    {
+      "file": "blender/candidates/gojo-a2-motion-study.blend",
+      "sha256": "f9fd605ddec22b83e7eb6e8c957f51ecdcc525aed5295a933c8e6381c1071bb1",
+      "actual": "f9fd605ddec22b83e7eb6e8c957f51ecdcc525aed5295a933c8e6381c1071bb1",
+      "unchanged": true
+    },
+    {
+      "file": "blender/candidates/gojo-a2-motion-v2.blend",
+      "sha256": "f399245e4253951fed79db5428768a060b168322c682bd232ad70f13222c792a",
+      "actual": "f399245e4253951fed79db5428768a060b168322c682bd232ad70f13222c792a",
+      "unchanged": true
+    },
+    {
+      "file": "blender/candidates/gojo-a2-purple-spacing.blend",
+      "sha256": "ef83a16ac559285bbc233e9ae31a84ed3215f97c623f977271dac5d5fd0ad06a",
+      "actual": "ef83a16ac559285bbc233e9ae31a84ed3215f97c623f977271dac5d5fd0ad06a",
+      "unchanged": true
+    },
+    {
+      "file": "blender/candidates/gojo-a3-thumb-distal.blend",
+      "sha256": "d055cbeb37ab447674c4cbcd3486a04edc4db51a7eec27f66df9e71a42bca4e8",
+      "actual": "d055cbeb37ab447674c4cbcd3486a04edc4db51a7eec27f66df9e71a42bca4e8",
+      "unchanged": true
+    },
+    {
+      "file": "blender/candidates/gojo-hand-fit.blend",
+      "sha256": "7a454e281f15a26e64e187385c955550f8ea5bdcf50e277860abaa24e48b15e5",
+      "actual": "7a454e281f15a26e64e187385c955550f8ea5bdcf50e277860abaa24e48b15e5",
+      "unchanged": true
+    },
+    {
+      "file": "blender/candidates/makehuman-reference.blend",
+      "sha256": "4fd5479c6566418e5623757703b4eee7a85a00a7abd0cb712fecc98ff12e4262",
+      "actual": "4fd5479c6566418e5623757703b4eee7a85a00a7abd0cb712fecc98ff12e4262",
+      "unchanged": true
+    },
+    {
+      "file": "blender/gojo.blend",
+      "sha256": "29d8bceac5c59fd3d28f08c2ec1d5c81076b40e1134abfa6d13b3c70fce2d65e",
+      "actual": "29d8bceac5c59fd3d28f08c2ec1d5c81076b40e1134abfa6d13b3c70fce2d65e",
+      "unchanged": true
+    },
+    {
+      "file": "public/models/candidates/gojo-a2-motion-v2.glb",
+      "sha256": "1f7adfffbe892137fbb983627085129bd41ccfb0422ca1cb79246be9acaa5aac",
+      "actual": "1f7adfffbe892137fbb983627085129bd41ccfb0422ca1cb79246be9acaa5aac",
+      "unchanged": true
+    },
+    {
+      "file": "public/models/candidates/gojo-a2-purple-spacing.glb",
+      "sha256": "1972211b666b2a1a94e17a53f516f5a45c08ad9b1fdda7244a6da31d9d39aae2",
+      "actual": "1972211b666b2a1a94e17a53f516f5a45c08ad9b1fdda7244a6da31d9d39aae2",
+      "unchanged": true
+    },
+    {
+      "file": "public/models/candidates/gojo-a3-thumb-distal.glb",
+      "sha256": "f32ad98d87098b01cabca4bb0a0781212c4ed8a73b2486cdf0f2e1547db216e1",
+      "actual": "f32ad98d87098b01cabca4bb0a0781212c4ed8a73b2486cdf0f2e1547db216e1",
+      "unchanged": true
+    },
+    {
+      "file": "public/models/candidates/gojo-hand-fit.glb",
+      "sha256": "a01f8b9049949b2c41c07d0ab30024f9af5388f8e293eb768235b5ff5a6b2614",
+      "actual": "a01f8b9049949b2c41c07d0ab30024f9af5388f8e293eb768235b5ff5a6b2614",
+      "unchanged": true
+    },
+    {
+      "file": "public/models/character-production/fixtures/gojo-final.glb",
+      "sha256": "871a1d217b0dcbf6da219957fb60faf557a92906555c55e63d8f8274f2569898",
+      "actual": "871a1d217b0dcbf6da219957fb60faf557a92906555c55e63d8f8274f2569898",
+      "unchanged": true
+    },
+    {
+      "file": "public/models/gojo.glb",
+      "sha256": "79c057bb6592722466cd794a6247cdf4e3c4f1d2fb48738412584512f4a33d7e",
+      "actual": "79c057bb6592722466cd794a6247cdf4e3c4f1d2fb48738412584512f4a33d7e",
+      "unchanged": true
+    }
+  ],
+  "snowSource": {
+    "file": "assets/vendor/snow/extracted/Snow/snow_v4.2.blend",
+    "expected": "80fd0a81bca90f0efdcdcb98422df0e198ae57f4a1c239e13fb795922779b1fc",
+    "actual": "80fd0a81bca90f0efdcdcb98422df0e198ae57f4a1c239e13fb795922779b1fc",
+    "unchanged": true
+  },
+  "reusedNativeImages": [
+    {
+      "file": "output/milestone-a5/snow-v2/axilla-back.png",
+      "sha256": "b48dc42f0362b026b05c15b8b685fb9ef408637eaf37cfcd34ffafb6b84d17a6"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/body-shoulder-wire.png",
+      "sha256": "2a24388ffe62c491b285492c4174b44811a4a6ed4ad3e27b8038008a9b45bed0"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/full-front.png",
+      "sha256": "315eb7d3617367e46c2689282eb9f18679ab747d704ed680f6e89af0247ad7c8"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/full-side.png",
+      "sha256": "689118e6caeb9eb1f8880eade1a1cc09b04988ca36132cafd03ec02f1def36db"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/hand-dorsal.png",
+      "sha256": "b1c9417ecdd730e659071a2cca302825e798d1bd022bc036fc1f2b5e7d580bac"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/hand-palmar.png",
+      "sha256": "e95977a970854901486875eba36fb3d191d7636c86d7fcabf47e5a89f1ff90cd"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/hand-web-thumb.png",
+      "sha256": "7dbf1a0738b93f061bc05e8389ef07fe13bfda29f08e6a632ee62fad143bfa20"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/hand-wire.png",
+      "sha256": "0a084141148d2a44aebe7c6a14b06a65c7a1b2773d593a5a3d911ec2e54aeb70"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/head-45.png",
+      "sha256": "f6e7faea079a36bcef9305105bcb6cb051601e6d8165682e11a96f49c87c1a55"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/head-front.png",
+      "sha256": "47e5316402aceb340aecb2e52bc52ce1d91804413713fe10a55ef207cd8797fb"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/head-side.png",
+      "sha256": "2a15a02095b00568b52c51375a0e7b79ea76f5fe158ad7bbc7a3bc8bee7bfbe0"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/head-wire.png",
+      "sha256": "2380b38f37d3cba3f3cd73e41e75e5642c06f8090f30ba54a88eb56286c51046"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/shoulder-down-wire.png",
+      "sha256": "318eafec959e7cdd637b526ed023a2dc7e6b0361aa67a7414b0a333f6d09a884"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/shoulder-down.png",
+      "sha256": "13e738823664e71e6ff79c9abdc5c73878e4ccea7b6bfa5fa80b36b1037f36a1"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/shoulder-front90-wire.png",
+      "sha256": "0ee573bdbd438023ec407e0283eca9471679be835b41940e4ac16f42eb327a0c"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/shoulder-front90.png",
+      "sha256": "c650a8595d0294e6056f9eb9fba0caf9a2cbf335d9718ed3703f3d0729ecb499"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/shoulder-side120-wire.png",
+      "sha256": "38b8f0ba66352e4422c8d3ecc702fb431a076b58b88a3b73dfc7f31c50cc6bf8"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/shoulder-side120.png",
+      "sha256": "8b91efdae1a47388a0fd9146c4f63fb40ce395701391d8d1b3556f41928743bc"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/shoulder-side90-wire.png",
+      "sha256": "8a13e07fe60adedb95b8efaa27794994da7502ac26cfd183adc42ab5dfcb8a4c"
+    },
+    {
+      "file": "output/milestone-a5/snow-v2/shoulder-side90.png",
+      "sha256": "24ea57197cad8967288a007b67f89a116e522c70c79cb4106961e246a4116a6c"
+    }
+  ],
+  "unexpectedTrackedChanges": [],
+  "validationStatus": "PASS_DOCUMENTATION_AND_PRESERVATION",
+  "artStatus": "BLOCKED BY ART ASSET QUALITY",
+  "applicationTests": "NOT_RERUN_A6: no application or asset changes",
+  "newRenders": 0,
+  "newModelFiles": 0,
+  "purchases": 0,
+  "sellerMessages": 0
+}
