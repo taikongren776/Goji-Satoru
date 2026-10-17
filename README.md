@@ -1,12 +1,30 @@
 # LIMITLESS · 五条悟
 
-Blender 角色资产与 Three.js 本地交互展示台。包含眼罩 / 六眼切换和「苍、赫、茈」三段技能演出。正式角色仍是未通过视觉验收的旧版；重建候选使用许可明确的基础网格，状态见 `VALIDATION.md`。
+Blender 角色资产与 Three.js 本地交互展示台。包含眼罩 / 六眼切换和「苍、赫、茈」三段技能演出。最新可操作预览为白发动漫角色候选，带宽幅黑色眼罩、放松站姿和六段动画，详见 [CHARACTER-RUNTIME.md](CHARACTER-RUNTIME.md)。默认生产页面仍保留旧模型，尚未切换为候选。
+
+## 首次下载与最新角色预览
+
+需要 Git LFS、Node.js 20.19+（推荐 24）。请使用 Git 克隆并拉取模型，不要把 LFS 指针文件当作真实模型：
+
+```powershell
+git lfs install
+git clone git@github.com:taikongren776/Goji-Satoru.git
+cd Goji-Satoru
+git lfs pull
+npm ci
+```
+
+Windows 双击 **`start-character-preview.cmd`**，进入最新角色的技能展示页。它启动本地 Vite 开发服务器；首次安装依赖需要网络。也可以运行 `npm run dev` 后访问：
+
+<http://127.0.0.1:5173/?character=/models/character-production/whitehair-preview.json>
+
+`character-study.html` 是独立外观对比页。当前版本属于预览，不是最终美术资产；已知局部蒙皮问题及真实验证范围见 [CHARACTER-RUNTIME.md](CHARACTER-RUNTIME.md)。发布说明见 [RELEASE-NOTES.md](RELEASE-NOTES.md)。
 
 ## 打开网页
 
 Windows 下双击 **`start.cmd`**。启动器会打开浏览器，默认地址是 <http://127.0.0.1:4173/>；端口被占用时使用下一个端口。保持启动窗口运行，关闭窗口或按 `Ctrl+C` 停止服务。
 
-需要 Node.js 20.19+，推荐 Node.js 24。已附带构建完成的 `dist/`，直接运行无需安装 npm 依赖或访问外部 CDN。不要直接双击 `dist/index.html`，浏览器需要通过本地 HTTP 服务加载 GLB。
+需要 Node.js 20.19+，推荐 Node.js 24。Git 仓库不包含 `dist/`，首次克隆后须先运行 `npm ci` 和 `npm run build`。`start.cmd` 打开的是保留旧模型的生产构建；查看最新候选请使用上面的 `start-character-preview.cmd`。不要直接双击 `dist/index.html`，浏览器需要通过本地 HTTP 服务加载模型。
 
 ## 操作
 
@@ -66,6 +84,6 @@ node scripts/validate-model.mjs public/models/candidates/gojo-hand-fit.glb
 
 主要验收环境为桌面 Chromium 浏览器（Chrome / Edge / Codex 内置浏览器）。提供手机宽度布局与触屏操作，实际帧率取决于设备；建议较弱设备使用「流畅」模式。
 
-项目不含战斗 AI、角色移动或线上部署。角色为从零制作的同人风格化模型，不是官方模型。相关角色和作品归原权利人所有。
+项目不含战斗 AI、角色移动或线上部署。最新候选基于 VRoid Project / pixiv 的 CC0 HairSample_Male 修改；历史候选另有 MakeHuman 和 Blender Studio Snow 来源记录。各资产许可见对应 `.LICENSE.md` 与 `assets/licenses/`，不可把全部历史资产统一视为 CC0。此项目不是官方模型或官方作品，相关角色和作品归原权利人所有。
 
 实际检查结果见 `VALIDATION.md`。
