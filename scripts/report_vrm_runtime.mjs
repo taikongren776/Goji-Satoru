@@ -4,6 +4,7 @@ const read=async n=>JSON.parse(await readFile(`${out}/${n}.json`,'utf8'));
 const [contract,deformation,blend]=await Promise.all([read('contract'),read('deformation'),read('blender-import')]);
 const esc=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 const figures=[['covered-face','眼罩正面'],['covered-side','眼罩侧面'],['uncovered-face','揭眼外观'],['blue','苍：无特效姿势'],['red-release','赫：无特效姿势'],['red-hand','赫：指缝近景'],['purple-fuse','茈：融合姿势'],['purple-release','茈：释放姿势'],['reveal-contact','揭眼过渡'],['cover-contact','戴眼罩过渡']];
+figures.splice(2,0,['covered-45','眼罩 45°：弧形前缘与收窄绑带'],['covered-left','眼罩另一侧'],['reveal-side','摘戴侧面']);
 await writeFile(`${out}/report.html`,`<!doctype html><meta charset="utf-8"><title>LIMITLESS 动画接入验收</title><style>body{background:#151a22;color:#e8edf5;font:16px/1.65 system-ui;max-width:1280px;margin:40px auto;padding:24px}a{color:#a8daff}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}figure{margin:0}img{width:100%}td,th{padding:10px;border-bottom:1px solid #465064;text-align:left}code{overflow-wrap:anywhere}h2{margin-top:40px}</style>
 <h1>已认可外观 → 可操作动画候选</h1>
 <p>实际 Three.js / Edge 截图。原正式资产与 UI / VFX 保持不变。没有自动美术 PASS 或最终角色完成的结论。</p>

@@ -22,6 +22,8 @@ function sample(name,time,view='front',uncovered=false){
   let target=new THREE.Vector3(0,.97,0);camera.position.set(view==='side'?4.35:view==='45'?2.7:0,1.22,view==='side'?0:view==='45'?3.5:4.35);
   if(view==='face'){target=bone('head').getWorldPosition(new THREE.Vector3());target.y+=.055;camera.position.copy(target).add(new THREE.Vector3(0,.015,.85));}
   if(view==='face-side'){target=bone('head').getWorldPosition(new THREE.Vector3());target.y+=.035;camera.position.copy(target).add(new THREE.Vector3(.8,.015,.15));}
+  if(view==='face-left'){target=bone('head').getWorldPosition(new THREE.Vector3());target.y+=.035;camera.position.copy(target).add(new THREE.Vector3(-.8,.015,.15));}
+  if(view==='face-45'){target=bone('head').getWorldPosition(new THREE.Vector3());target.y+=.045;camera.position.copy(target).add(new THREE.Vector3(.60,.015,.60));}
   if(view==='hands'){target=bone('rightHand').getWorldPosition(new THREE.Vector3());camera.position.copy(target).add(new THREE.Vector3(-.22,.15,.60));}
   if(view==='upper'){target.set(0,1.45,.10);camera.position.set(1.2,1.7,2.4);}
   camera.lookAt(target);renderer.render(scene,camera);return {name,time,sockets:Object.fromEntries(['FX_Hand_L','FX_Hand_R','FX_Center'].map(n=>[n,adapter.socket(n).toArray()])),coverVisible:cover.visible};
@@ -51,6 +53,7 @@ window.audit={sample,audit};sample('Idle',0);window.ready=true;
 const browser=await chromium.launch({channel:'msedge',headless:true});const errors=[];
 try{const page=await browser.newPage({viewport:{width:1000,height:1000}});page.on('pageerror',e=>errors.push(e.message));await page.goto(`http://127.0.0.1:5173/${out}/audit.html`);await page.waitForFunction(()=>window.ready,null,{timeout:60000});
  const shots=[['idle','Idle',0,'front'],['covered-face','Idle',0,'face'],['covered-side','Idle',0,'face-side'],['uncovered-face','Idle',0,'face',true],['blue','CastBlue',1.65,'upper'],['red-charge','CastRed',1.12,'upper'],['red-release','CastRed',1.5,'upper'],['red-hand','CastRed',1.5,'hands'],['purple-fuse','CastPurple',3.8,'upper'],['purple-release','CastPurple',4.7,'upper'],['reveal-contact','RevealEyes',.92,'face'],['reveal-lift','RevealEyes',1.35,'face'],['cover-contact','CoverEyes',1.32,'face']];
+ shots.push(['covered-45','Idle',0,'face-45'],['covered-left','Idle',0,'face-left'],['reveal-side','RevealEyes',.92,'face-side'],['cover-side','CoverEyes',1.32,'face-side']);
  const snapshots=[];for(const [id,...args] of shots){snapshots.push(await page.evaluate(a=>window.audit.sample(...a),args));await page.screenshot({path:`${out}/${id}.png`});}
  const measurements=await page.evaluate(()=>window.audit.audit());await writeFile(`${out}/deformation.json`,JSON.stringify({...measurements,snapshots,errors},null,2));if(measurements.nonFinite||errors.length)throw Error('Non-finite mesh data or browser error');console.log(JSON.stringify(measurements));
 }finally{await browser.close();}

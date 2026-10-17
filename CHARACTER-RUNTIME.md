@@ -34,6 +34,12 @@ http://127.0.0.1:5173/?character=/models/character-production/whitehair-preview.
 
 ## 复现
 
+### 眼罩外形调整（同日追加）
+
+根据用户反馈，将原先等宽、横向突出的眼罩改为正面包覆、两侧收窄的弧形布带。头部轮廓采样避开耳朵的宽度，绑带向耳上方绕行；降低离肤间距，增加浅弧截面，并把纯黑观感调为低反光炭黑。未改动脸部、头发、动画数据、UI 或 VFX。
+
+实际检查了正面、左右侧面、45°、摘戴正侧面及三技能网页截图；完整 780 帧变形结果与上一版相同，原指缝警告保留。资产契约验证通过，Blender 已重新保存和打开。新截图在 `output/playwright/vrm-integration/`；调整前正侧面对照保留在 `output/playwright/blindfold-refit/before/`。近景仍可看到简化布带结构，未宣称真实布料模拟。
+
 先运行 `npm run dev`，再在另一个 PowerShell 执行：
 
 ```powershell

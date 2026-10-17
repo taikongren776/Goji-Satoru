@@ -119,23 +119,42 @@ export async function bake(){
     const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({side:THREE.DoubleSide}));m.matrixAutoUpdate=false;m.matrixWorld.copy(o.matrixWorld);return m;
   });
   const ray=new THREE.Raycaster();
-  let fittedCount=0;
-  const position=[];
-  for(const v of vertices){
-    const x=(v.x-center.x)/size.x,y=(v.y-center.y)/size.y,z=(v.z-center.z)/size.z;
-    const fitted=new THREE.Vector3(x*.218,eyeY-.024+y*.065,headPos.z+z*.230+.012);
-    const origin=new THREE.Vector3(headPos.x,fitted.y,headPos.z+.012),direction=fitted.clone().sub(origin).normalize();
-    // Span the eye sockets with a continuous envelope. Sample the forehead
-    // over the entire lift path as well: fitting each row to concave skin
-    // exposes the eyeballs and clips the cover during the upward transition.
+  // Measure a smooth head contour above the ears. The previous maximum over
+  // the entire face/lift interval included the ears and made a rigid visor.
+  const contourCount=128,contour=[];
+  for(let i=0;i<contourCount;i++){
+    const angle=i/contourCount*Math.PI*2,direction=new THREE.Vector3(Math.sin(angle),0,Math.cos(angle));
     let radius=0;
-    for(let dy=-.015;dy<=.085;dy+=.005){
-      const probe=origin.clone();probe.y=eyeY+dy;
+    const front=direction.z>.5;
+    for(let dy=front?-.035:.025;dy<=.055;dy+=.005){
+      const probe=new THREE.Vector3(headPos.x,eyeY+dy,headPos.z+.012);
       ray.set(probe.clone().addScaledVector(direction,.32),direction.clone().negate());
       const hit=ray.intersectObjects(fittingSurfaces,false)[0];
       if(hit)radius=Math.max(radius,hit.point.distanceTo(probe));
     }
-    if(radius){fitted.copy(origin).addScaledVector(direction,radius+.006);fittedCount++;}
+    contour.push(radius);
+  }
+  const smoothContour=contour.map((r,i)=>[-2,-1,0,1,2].reduce((sum,k)=>sum+contour[(i+k+contourCount)%contourCount]*[1,2,3,2,1][k+2],0)/9);
+  let fittedCount=0;
+  const position=[];
+  for(const v of vertices){
+    const x=(v.x-center.x)/size.x,y=(v.y-center.y)/size.y,z=(v.z-center.z)/size.z;
+    const direction=new THREE.Vector3(x*.218,0,z*.230).normalize();
+    const angle=(Math.atan2(direction.x,direction.z)+Math.PI*2)%(Math.PI*2);
+    const index=angle/(Math.PI*2)*contourCount,lo=Math.floor(index),mix=index-lo;
+    const radius=THREE.MathUtils.lerp(smoothContour[lo],smoothContour[(lo+1)%contourCount],mix);
+    const front=Math.max(0,direction.z),temple=direction.x*direction.x;
+    const width=.026+.038*Math.pow(front,.65);
+    // A narrower strap rises around the temples; the lower edge clears the
+    // nose bridge, while a shallow crown gives the fabric a soft section.
+    const bridge=.004*Math.pow(front,20)*Math.max(0,-y*2);
+    const around=Math.min(angle,Math.PI*2-angle);
+    const aboveEar=.058*Math.exp(-Math.pow((around-1.72)/.40,2));
+    const height=eyeY-.022+.012*temple+aboveEar+y*width+bridge;
+    const crown=.0018*Math.max(0,1-4*y*y);
+    const fold=.0006*Math.sin(y*16+angle*3)*temple;
+    const fitted=new THREE.Vector3(headPos.x,height,headPos.z+.012);
+    if(radius){fitted.addScaledVector(direction,radius+.0025+crown+fold);fittedCount++;}
     fitted.applyMatrix4(inverse);position.push(...fitted.toArray());
   }
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(position,3));g.setIndex(Array.from(mask.geometry.index.array));g.computeVertexNormals();
