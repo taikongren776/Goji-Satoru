@@ -1,0 +1,23 @@
+{
+  "version":1,
+  "id":"whitehair-animation-preview",
+  "asset":"../candidates/limitless-runtime.vrm",
+  "usage":"integration-test",
+  "presentation":"authored",
+  "animations":{
+    "Idle":{"clip":"Idle","timing":"exact"},
+    "CastBlue":{"clip":"CastBlue","timing":"exact"},
+    "CastRed":{"clip":"CastRed","timing":"exact"},
+    "CastPurple":{"clip":"CastPurple","timing":"exact"},
+    "RevealEyes":{"clip":"RevealEyes","timing":"exact"},
+    "CoverEyes":{"clip":"CoverEyes","timing":"exact"}
+  },
+  "nodes":{
+    "Blindfold":{"node":"Blindfold","mode":"fade-lift"},
+    "FX_Hand_L":{"node":"FX_Hand_L"},
+    "FX_Hand_R":{"node":"FX_Hand_R"},
+    "FX_Center":{"node":"FX_Center"}
+  },
+  "blink":{"target":"Blink"},
+  "coordinates":{"unit":"meter","up":"Y","forward":"+Z","heightRange":[1.5,2.1],"groundTolerance":0.02}
+}

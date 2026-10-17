@@ -19,6 +19,12 @@ export async function loadCharacterAsset(appearance:EyeTransition,progress:(perc
   const manifest=parseCharacterManifest(await response.json());
   if(!import.meta.env.DEV&&manifest.usage==='integration-test')throw new Error('Integration fixtures cannot be selected by a production build');
   const assetUrl=new URL(manifest.asset,url),loader=new GLTFLoader();
+  // Native VRM keeps the accepted MToon appearance. Its clips target raw bones,
+  // so the shared adapter clock remains the only animation driver.
+  if(assetUrl.pathname.toLowerCase().endsWith('.vrm')){
+    const {VRMLoaderPlugin}=await import('@pixiv/three-vrm');
+    loader.register(parser=>new VRMLoaderPlugin(parser));
+  }
   const gltf=await (async()=>{
     if(manifest.usage!=='production')return loader.loadAsync(assetUrl.href,event=>{if(event.total)progress(Math.min(95,event.loaded/event.total*95));});
     const reviewResponse=await fetch(new URL(manifest.review!,url));if(!reviewResponse.ok)throw new Error(`Human review HTTP ${reviewResponse.status}`);
@@ -29,6 +35,13 @@ export async function loadCharacterAsset(appearance:EyeTransition,progress:(perc
     return loader.parseAsync(bytes,new URL('.',assetUrl).href);
   })();
   try{
+    if(gltf.userData.vrm){
+      const {VRMUtils}=await import('@pixiv/three-vrm'),vrm=gltf.userData.vrm;
+      VRMUtils.rotateVRM0(vrm);vrm.humanoid.autoUpdateHumanBones=false;
+      // Initialize the authored expression state once, matching the accepted
+      // study viewer. Subsequent raw-bone clips and blink belong to the adapter.
+      vrm.update(0);
+    }
     if(manifest.presentation==='legacy')applyLegacyMaterials(gltf.scene);
     gltf.scene.traverse(o=>{if(o instanceof THREE.Mesh){o.castShadow=true;o.receiveShadow=false;o.frustumCulled=false;}});
     return new CharacterAdapter(gltf.scene,gltf.animations,manifest,appearance);

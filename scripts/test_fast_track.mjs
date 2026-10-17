@@ -1,12 +1,13 @@
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
-const out='output/playwright/fast-track/regression';await mkdir(out,{recursive:true});
+const out=process.env.LIMITLESS_TEST_OUTPUT||'output/playwright/fast-track/regression';await mkdir(out,{recursive:true});
+const testUrl=process.env.LIMITLESS_TEST_URL||'http://127.0.0.1:5173/';
 const browser=await chromium.launch({channel:'msedge',headless:true});const results=[];
 try{
  const page=await browser.newPage({viewport:{width:1920,height:1080}}),errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
- await page.goto('http://127.0.0.1:5173/');await page.waitForFunction(()=>window.__LIMITLESS__?.ready,null,{timeout:60000});
+ await page.goto(testUrl);await page.waitForFunction(()=>window.__LIMITLESS__?.ready,null,{timeout:60000});
  const snapshot=()=>page.evaluate(()=>window.__LIMITLESS__);
  const idle=()=>page.waitForFunction(()=>!window.__LIMITLESS__.skill&&!window.__LIMITLESS__.activity,null,{timeout:30000});
  const resetOK=async()=>{const d=await snapshot();assert.equal(d.effects.active,false);assert.equal(d.effects.warp,0);assert.ok(d.effects.lights.every(x=>x===0));assert.ok(Object.values(d.effects.layers).every(x=>x===false));return d;};
@@ -30,7 +31,7 @@ try{
  results.push({checks:['complete all three twice','competing trigger rejected','camera restored','all layers/lights/warp reset','stable warmed geometry/texture count','cancel all three','reveal/cover','low quality','reduced motion','mobile viewport/button'],low,errors});assert.equal(errors.length,0);
  await page.close();
  // Separate, actual touch-enabled context.
- const mobile=await browser.newPage({viewport:{width:390,height:844},hasTouch:true,isMobile:true});await mobile.goto('http://127.0.0.1:5173/');await mobile.waitForFunction(()=>window.__LIMITLESS__?.ready,null,{timeout:60000});await mobile.locator('[data-id="blue"]').tap();await mobile.waitForFunction(()=>window.__LIMITLESS__.skill==='blue');await mobile.locator('#cancel').tap();await mobile.waitForFunction(()=>!window.__LIMITLESS__.skill&&!window.__LIMITLESS__.activity);results.push({touch:'PASS'});await mobile.close();
- const retry=await browser.newPage();let fail=true;await retry.route('**/models/gojo.glb',r=>{if(fail){fail=false;return r.abort('failed');}return r.continue();});await retry.goto('http://127.0.0.1:5173/');await retry.locator('#retry').waitFor({state:'visible'});await retry.locator('#retry').click();await retry.waitForFunction(()=>window.__LIMITLESS__?.ready,null,{timeout:60000});results.push({retry:'PASS'});await retry.close();
+ const mobile=await browser.newPage({viewport:{width:390,height:844},hasTouch:true,isMobile:true});await mobile.goto(testUrl);await mobile.waitForFunction(()=>window.__LIMITLESS__?.ready,null,{timeout:60000});await mobile.locator('[data-id="blue"]').tap();await mobile.waitForFunction(()=>window.__LIMITLESS__.skill==='blue');await mobile.locator('#cancel').tap();await mobile.waitForFunction(()=>!window.__LIMITLESS__.skill&&!window.__LIMITLESS__.activity);results.push({touch:'PASS'});await mobile.close();
+ const retry=await browser.newPage();let fail=true;await retry.route(process.env.LIMITLESS_TEST_ASSET_ROUTE||'**/models/gojo.glb',r=>{if(fail){fail=false;return r.abort('failed');}return r.continue();});await retry.goto(testUrl);await retry.locator('#retry').waitFor({state:'visible'});await retry.locator('#retry').click();await retry.waitForFunction(()=>window.__LIMITLESS__?.ready,null,{timeout:60000});results.push({retry:'PASS'});await retry.close();
 }finally{await writeFile(`${out}/results.json`,JSON.stringify(results,null,2));await browser.close();}
 console.log('PASS: full skills, reset, resource stability, controls, reduced/low, resize, touch, retry');
