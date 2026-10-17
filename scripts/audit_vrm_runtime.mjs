@@ -38,22 +38,41 @@ for(const g of groups.values()){
   const edges=[];for(const [a,b] of g.edges.values())if(selected(a)||selected(b)){const pa=new THREE.Vector3().fromBufferAttribute(geo.attributes.position,a),pb=new THREE.Vector3().fromBufferAttribute(geo.attributes.position,b),length=pa.distanceTo(pb);if(length>.001)edges.push({a,b,length});}
   if(edges.length)regions.push({mesh:g.mesh,edges,ids:[...new Set(edges.flatMap(e=>[e.a,e.b]))]});
 }
+const lowerBody=[];
+for(const g of groups.values()){
+ const geo=g.mesh.geometry,si=geo.attributes.skinIndex,sw=geo.attributes.skinWeight;
+ const influenced=(i,pattern)=>[0,1,2,3].some(k=>sw.getComponent(i,k)>.1&&pattern.test(g.mesh.skeleton.bones[si.getComponent(i,k)].name));
+ const edges=[...g.edges.values()].filter(([a,b])=>influenced(a,/UpperLeg|LowerLeg|Foot|Toe/)||influenced(b,/UpperLeg|LowerLeg|Foot|Toe/)).map(([a,b])=>({a,b,length:new THREE.Vector3().fromBufferAttribute(geo.attributes.position,a).distanceTo(new THREE.Vector3().fromBufferAttribute(geo.attributes.position,b))})).filter(e=>e.length>.001);
+ const soles=[...g.ids].filter(i=>influenced(i,/Foot|Toe/));
+ if(edges.length)lowerBody.push({mesh:g.mesh,edges,soles,ids:[...new Set([...edges.flatMap(e=>[e.a,e.b]),...soles])]});
+}
 function audit(){const results=[];let nonFinite=0;
+ const stance={minFootVertexY:Infinity,maxLowestFootY:-Infinity,maxAnkleDrift:0,maxLegEdgeRatio:0,worstLegEdge:null};let ankleRest;
  for(const name of ['Idle','CastBlue','CastRed','CastPurple','RevealEyes','CoverEyes']){
   const duration=adapter.actions.get(name).getClip().duration;let maxRatio=0,over3=0,worst=null,maxHandOverlapFrames=0;
   for(let f=0;f<=Math.round(duration*30);f++){
    sample(name,Math.min(duration,f/30));
+   const ankles=['leftFoot','rightFoot'].map(n=>bone(n).getWorldPosition(new THREE.Vector3()));ankleRest??=ankles.map(p=>p.clone());
+   ankles.forEach((p,i)=>stance.maxAnkleDrift=Math.max(stance.maxAnkleDrift,p.distanceTo(ankleRest[i])));
+   let lowest=Infinity;
+   for(const r of lowerBody){
+    r.mesh.skeleton.update();const points=new Map(r.ids.map(i=>[i,r.mesh.getVertexPosition(i,new THREE.Vector3()).applyMatrix4(r.mesh.matrixWorld)]));
+    for(const i of r.soles)lowest=Math.min(lowest,points.get(i).y);
+    for(const e of r.edges){const ratio=points.get(e.a).distanceTo(points.get(e.b))/e.length;if(ratio>stance.maxLegEdgeRatio){stance.maxLegEdgeRatio=ratio;stance.worstLegEdge={name,frame:f,vertices:[e.a,e.b],restLength:e.length,ratio};}}
+   }
+   stance.minFootVertexY=Math.min(stance.minFootVertexY,lowest);stance.maxLowestFootY=Math.max(stance.maxLowestFootY,lowest);
    for(const r of regions){r.mesh.skeleton.update();const points=new Map();for(const i of r.ids){const v=r.mesh.getVertexPosition(i,new THREE.Vector3());points.set(i,v);if(!v.toArray().every(Number.isFinite))nonFinite++;}
     for(const e of r.edges){const ratio=points.get(e.a).distanceTo(points.get(e.b))/e.length;if(ratio>3)over3++;if(ratio>maxRatio){maxRatio=ratio;worst={frame:f,time:f/30,mesh:r.mesh.name,vertices:[e.a,e.b],restLength:e.length,ratio};}}
    }
   }results.push({name,frames:Math.round(duration*30)+1,maxRatio,edgeFrameEventsOver3:over3,worst});
- }return {results,nonFinite,note:'Bind-pose-relative hand/shoulder edge measurements, not collision or aesthetic approval.'};}
+ }return {results,nonFinite,stance,note:'Bind-pose-relative edge measurements and foot grounding, not collision or aesthetic approval.'};}
 window.audit={sample,audit};sample('Idle',0);window.ready=true;
 </script>`);
 const browser=await chromium.launch({channel:'msedge',headless:true});const errors=[];
 try{const page=await browser.newPage({viewport:{width:1000,height:1000}});page.on('pageerror',e=>errors.push(e.message));await page.goto(`http://127.0.0.1:5173/${out}/audit.html`);await page.waitForFunction(()=>window.ready,null,{timeout:60000});
  const shots=[['idle','Idle',0,'front'],['covered-face','Idle',0,'face'],['covered-side','Idle',0,'face-side'],['uncovered-face','Idle',0,'face',true],['blue','CastBlue',1.65,'upper'],['red-charge','CastRed',1.12,'upper'],['red-release','CastRed',1.5,'upper'],['red-hand','CastRed',1.5,'hands'],['purple-fuse','CastPurple',3.8,'upper'],['purple-release','CastPurple',4.7,'upper'],['reveal-contact','RevealEyes',.92,'face'],['reveal-lift','RevealEyes',1.35,'face'],['cover-contact','CoverEyes',1.32,'face']];
  shots.push(['covered-45','Idle',0,'face-45'],['covered-left','Idle',0,'face-left'],['reveal-side','RevealEyes',.92,'face-side'],['cover-side','CoverEyes',1.32,'face-side']);
+ shots.push(['idle-side','Idle',0,'side'],['idle-45','Idle',0,'45'],['idle-uncovered','Idle',0,'front',true],['red-full','CastRed',1.5,'45'],['purple-full','CastPurple',4.7,'45']);
  const snapshots=[];for(const [id,...args] of shots){snapshots.push(await page.evaluate(a=>window.audit.sample(...a),args));await page.screenshot({path:`${out}/${id}.png`});}
  const measurements=await page.evaluate(()=>window.audit.audit());await writeFile(`${out}/deformation.json`,JSON.stringify({...measurements,snapshots,errors},null,2));if(measurements.nonFinite||errors.length)throw Error('Non-finite mesh data or browser error');console.log(JSON.stringify(measurements));
 }finally{await browser.close();}

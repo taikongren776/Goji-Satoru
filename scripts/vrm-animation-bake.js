@@ -13,6 +13,9 @@ export async function bake(){
   const V=(a)=>new THREE.Vector3(...a),Q=()=>new THREE.Quaternion();
   const point=b=>b.getWorldPosition(new THREE.Vector3());
   const raw=[];vrm.scene.traverse(o=>{if(o.isBone&&!o.name.startsWith('Normalized_'))raw.push(o);});
+  const footRest=Object.fromEntries(['left','right'].map(side=>[side,{
+    position:point(bone(side+'Foot')),rotation:bone(side+'Foot').getWorldQuaternion(Q())
+  }]));
   const frame=(f,n)=>{f=f.clone().normalize();n=n.clone().addScaledVector(f,-n.dot(f)).normalize();return Q().setFromRotationMatrix(new THREE.Matrix4().makeBasis(f,n,new THREE.Vector3().crossVectors(f,n)));};
   const handFrames={};
   for(const side of ['left','right']){
@@ -55,7 +58,31 @@ export async function bake(){
     bone(side+'ThumbMetacarpal').rotation.y=s*.18*amount;
     bone(side+'ThumbProximal').rotation.z=s*.28*amount;bone(side+'ThumbDistal').rotation.z=s*.30*amount;
   }
-  function rest(){vrm.humanoid.resetNormalizedPose();bone('leftUpperArm').rotation.z=1.3;bone('rightUpperArm').rotation.z=-1.3;curl('left',.12);curl('right',.12);update();}
+  function baseRest(){vrm.humanoid.resetNormalizedPose();bone('leftUpperArm').rotation.z=1.3;bone('rightUpperArm').rotation.z=-1.3;curl('left',.12);curl('right',.12);update();}
+  function relaxedLeg(side,x,z,yaw){
+    const upper=bone(side+'UpperLeg'),lower=bone(side+'LowerLeg'),foot=bone(side+'Foot');
+    const a=point(upper),l1=a.distanceTo(point(lower)),l2=point(lower).distanceTo(point(foot));
+    const target=footRest[side].position.clone();target.x=x;target.z+=z;
+    const direction=target.clone().sub(a),distance=direction.length();direction.normalize();
+    if(distance>=l1+l2-.0005)throw Error('Relaxed stance exceeds leg reach: '+side);
+    const along=(l1*l1-l2*l2+distance*distance)/(2*distance);
+    const bend=new THREE.Vector3(Math.sin(yaw),0,Math.cos(yaw));bend.addScaledVector(direction,-bend.dot(direction)).normalize();
+    const knee=a.clone().addScaledVector(direction,along).addScaledVector(bend,Math.sqrt(Math.max(0,l1*l1-along*along)));
+    aim(upper,lower,knee);aim(lower,foot,target);
+    const orientation=Q().setFromAxisAngle(V([0,1,0]),yaw).multiply(footRest[side].rotation);
+    foot.quaternion.copy(foot.parent.getWorldQuaternion(Q()).invert().multiply(orientation));update();
+  }
+  function rest(){
+    baseRest();
+    // Offset the pelvis toward the supporting left foot; the right foot is
+    // slightly forward and turned out. Bake IK offline so soles remain planted.
+    const hips=bone('hips'),hipPosition=point(hips).add(V([.045,-.012,0]));
+    hips.position.copy(hips.parent.worldToLocal(hipPosition));hips.rotation.z=-.045;update();
+    relaxedLeg('left',.125,0,.08);relaxedLeg('right',-.15,.075,-.16);
+    bone('spine').rotation.z=.040;bone('chest').rotation.z=-.015;
+    bone('leftUpperArm').rotation.z=1.36;bone('rightUpperArm').rotation.z=-1.29;
+    update();
+  }
   function pose(kind){
     rest();
     if(kind==='blue'){
@@ -100,7 +127,9 @@ export async function bake(){
     }
     clips.push({name,duration,times,tracks});
   }
-  rest();
+  // Fit the accessory in the same neutral pose as earlier revisions. A change
+  // to the standing animation must not alter the accepted head accessory.
+  baseRest();
   // Reuse the old accessory mesh only; no old face/eye/body geometry is copied.
   const legacy=await new GLTFLoader().loadAsync('/models/gojo.glb');legacy.scene.updateMatrixWorld(true);
   let mask;legacy.scene.getObjectByName('Blindfold').traverse(o=>{if(o.isSkinnedMesh&&!mask)mask=o;});if(!mask)throw Error('Missing source cover mesh');mask.skeleton.update();
