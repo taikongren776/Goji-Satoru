@@ -1,7 +1,8 @@
 // One candidate, one bounded visual/rig inspection. No changes to the VRM or active asset.
 import {chromium} from 'playwright';
 import {mkdir,writeFile} from 'node:fs/promises';
-const out='output/playwright/fast-track/candidate';await mkdir(out,{recursive:true});
+const out=process.argv[3]||'output/playwright/fast-track/candidate';await mkdir(out,{recursive:true});
+const asset=process.argv[2]||'/models/candidates/fast-track-hairsample-male.vrm';
 const html=`<!doctype html><html><head><style>body{margin:0;background:#20252e}canvas{display:block}</style></head><body><script type="module">
 import * as THREE from '/node_modules/three/build/three.module.js';
 import {GLTFLoader} from '/node_modules/three/examples/jsm/loaders/GLTFLoader.js';
@@ -9,7 +10,7 @@ import {VRMLoaderPlugin,VRMUtils} from '/node_modules/@pixiv/three-vrm/lib/three
 const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(1000,1000);renderer.setPixelRatio(1);renderer.setClearColor(0x20252e);document.body.append(renderer.domElement);
 const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(30,1,.01,100);scene.add(new THREE.HemisphereLight(0xffffff,0x778899,2));const light=new THREE.DirectionalLight(0xffffff,2);light.position.set(-2,4,4);scene.add(light);
 const loader=new GLTFLoader();loader.register(p=>new VRMLoaderPlugin(p));
-const gltf=await loader.loadAsync('/models/candidates/fast-track-hairsample-male.vrm');const vrm=gltf.userData.vrm;VRMUtils.rotateVRM0(vrm);scene.add(vrm.scene);
+const gltf=await loader.loadAsync(${JSON.stringify(asset)});const vrm=gltf.userData.vrm;VRMUtils.rotateVRM0(vrm);scene.add(vrm.scene);
 const bone=n=>vrm.humanoid.getNormalizedBoneNode(n);
 window.audit={meta:vrm.meta,animations:gltf.animations.map(a=>a.name),bones:Object.keys(vrm.humanoid.humanBones),render(view){
 bone('leftUpperArm').rotation.z=1.3;bone('rightUpperArm').rotation.z=-1.3;

@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LIMITLESS · 人物候选对比</title>
+<style>
+*{box-sizing:border-box}body{margin:0;color:#e9edf5;background:#20252e;font:14px/1.6 system-ui,sans-serif}header{position:absolute;top:0;left:0;right:0;padding:20px 24px;background:linear-gradient(#111821eb,transparent);z-index:1;pointer-events:none}h1{font-size:19px;margin:0 0 4px}header p{margin:0;color:#b3c1d0;max-width:650px}main{height:100vh;min-height:520px}canvas{display:block;width:100%;height:100%;touch-action:none}aside{position:absolute;right:20px;top:20px;width:230px;padding:18px;border:1px solid #526172;background:#141d28ef;border-radius:12px;z-index:2}label{display:block;margin:0 0 14px}select,button{font:inherit;color:#e9edf5;border:1px solid #526172;background:#253142;border-radius:5px;padding:7px;width:100%}select{margin-top:5px}button{cursor:pointer;margin:4px 0}output{display:block;color:#9ccbf0;font-size:12px}footer{position:absolute;bottom:12px;left:24px;right:24px;color:#b3c1d0;pointer-events:none}a{color:#acd7ff}#retry{display:none}#status{max-width:640px}@media(max-width:700px){header{padding:12px}header p{display:none}aside{top:auto;bottom:38px;right:8px;width:175px;padding:10px;font-size:12px}label{margin-bottom:5px}footer{left:12px;font-size:11px}}
+</style></head><body>
+<header><h1>LIMITLESS · 人物候选对比</h1><p>相同灯光、无技能特效。拖动旋转，滚轮 / 双指缩放。新版本是外观候选，尚未替换正式角色。</p><output id="status">正在加载模型…</output></header>
+<main id="viewport"></main>
+<aside>
+<label>对比模型<select id="asset"><option value="styled">白发候选 · 本次修改</option><option value="source">VRoid 原始基础资产</option><option value="legacy">原正式粗模</option></select></label>
+<label>固定视角<select id="view"><option value="front">正面全身</option><option value="45">45° 全身</option><option value="side">左侧全身</option><option value="face">面部特写</option><option value="hand">左手斜侧</option><option value="hand-back">左手反面</option><option value="right-hand">右手斜侧</option><option value="shoulder">肩部特写</option></select></label>
+<label>绑定检查<select id="pose"><option value="relaxed">自然垂臂</option><option value="side90">侧举 90°</option><option value="side120">侧举 120°</option><option value="forward90">前举 90°</option><option value="half">半握拳</option><option value="fist">握拳</option><option value="blink">闭眼</option></select></label>
+<button id="reset">复位观察镜头</button><button id="retry">重试加载</button>
+<output>未完成：高领制服、五条悟发型、眼罩与六段动作接入。</output>
+</aside>
+<footer>此页单独检查人物；正式展示与技能交互保持原样。</footer>
+<script type="module" src="/src/character-study.ts"></script></body></html>

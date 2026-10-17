@@ -1,5 +1,7 @@
 # Character asset status — FAST TRACK RESET
 
+2026-10-17 人物优化补充：已从该 CC0 VRM 制作可编辑的白发外观候选，实际调整原网格脸部 / 发束 / 身材比例与配色，并提供 `character-study.html` 三方对比。结果见根目录 `CHARACTER-STUDY.md`。人物结构优于旧粗模，但少年感、连帽衫、非目标发型和动作接口缺失仍阻止正式替换；美术状态未改成通过。本次未修改正式角色或 VFX。
+
 2026-10-17：用户已终止Snow专业重建和美术委托路线。当前采用fallback C，正式旧角色仅作临时资产，继续推进独立VFX；没有把角色美术状态改成通过。一次免费CC0 VRM男性样例已实际渲染，未批准替换。最新执行结果见项目根目录 `FAST-TRACK.md`。以下A4冻结记录作为历史保留，不构成继续Snow制作或委托的指令。
 
 **Milestone A — BLOCKED BY ART ASSET QUALITY**
