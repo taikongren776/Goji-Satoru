@@ -40,6 +40,12 @@ http://127.0.0.1:5173/?character=/models/character-production/whitehair-preview.
 
 实际检查了正面、左右侧面、45°、摘戴正侧面及三技能网页截图；完整 780 帧变形结果与上一版相同，原指缝警告保留。资产契约验证通过，Blender 已重新保存和打开。新截图在 `output/playwright/vrm-integration/`；调整前正侧面对照保留在 `output/playwright/blindfold-refit/before/`。近景仍可看到简化布带结构，未宣称真实布料模拟。
 
+### 动画宽幅眼罩调整（同日追加）
+
+用户进一步要求接近动画中的眼罩：将正面设计宽度从约 64 mm 提升到约 110 mm，同时重新定位上下缘，让布带覆盖眉眼；侧后方保留宽幅包裹并绕到耳上方。新增两道浅斜向张力褶皱，采用更深的哑光黑材质。鼻梁下缘单独留空，避免宽幅布带穿入鼻梁。保留现有发型，不把这次配件调整描述为完整原作造型复刻。
+
+实际正面、左右侧面、45°、摘戴近景和 780 帧骨骼采样已重新检查；原指缝警告未变化。修改前截图保存在 `output/playwright/blindfold-anime/before/`。可编辑 Blender 候选同步更新。
+
 先运行 `npm run dev`，再在另一个 PowerShell 执行：
 
 ```powershell

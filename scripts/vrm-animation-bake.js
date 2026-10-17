@@ -126,7 +126,7 @@ export async function bake(){
     const angle=i/contourCount*Math.PI*2,direction=new THREE.Vector3(Math.sin(angle),0,Math.cos(angle));
     let radius=0;
     const front=direction.z>.5;
-    for(let dy=front?-.035:.025;dy<=.055;dy+=.005){
+    for(let dy=front?-.035:.040;dy<=.090;dy+=.005){
       const probe=new THREE.Vector3(headPos.x,eyeY+dy,headPos.z+.012);
       ray.set(probe.clone().addScaledVector(direction,.32),direction.clone().negate());
       const hit=ray.intersectObjects(fittingSurfaces,false)[0];
@@ -144,15 +144,20 @@ export async function bake(){
     const index=angle/(Math.PI*2)*contourCount,lo=Math.floor(index),mix=index-lo;
     const radius=THREE.MathUtils.lerp(smoothContour[lo],smoothContour[(lo+1)%contourCount],mix);
     const front=Math.max(0,direction.z),temple=direction.x*direction.x;
-    const width=.026+.038*Math.pow(front,.65);
-    // A narrower strap rises around the temples; the lower edge clears the
-    // nose bridge, while a shallow crown gives the fabric a soft section.
-    const bridge=.004*Math.pow(front,20)*Math.max(0,-y*2);
+    // The anime silhouette is a broad cloth wrap covering brows and eyes,
+    // not an eye-level strap. Keep the lower edge above the cheek and carry
+    // the added coverage upwards across the forehead.
+    const width=.064+.046*Math.pow(front,.65);
+    const bridge=.012*Math.pow(front,20)*Math.max(0,-y*2);
     const around=Math.min(angle,Math.PI*2-angle);
-    const aboveEar=.058*Math.exp(-Math.pow((around-1.72)/.40,2));
-    const height=eyeY-.022+.012*temple+aboveEar+y*width+bridge;
-    const crown=.0018*Math.max(0,1-4*y*y);
-    const fold=.0006*Math.sin(y*16+angle*3)*temple;
+    const aboveEar=.056*Math.exp(-Math.pow((around-1.72)/.48,2));
+    const height=eyeY+.001-.030*Math.pow(front,.30)+.006*temple+aboveEar+y*width+bridge;
+    const crown=.003*Math.max(0,1-4*y*y);
+    // Two shallow oblique tension folds, fading at the hem, give real
+    // geometry shading without adding painted stripes or a glossy visor.
+    const edgeFade=Math.max(0,1-4*y*y);
+    const fold=edgeFade*(.0028*Math.exp(-Math.pow((y-.16-.09*direction.x)/.095,2))
+      -.0012*Math.exp(-Math.pow((y+.17+.12*direction.x)/.09,2)));
     const fitted=new THREE.Vector3(headPos.x,height,headPos.z+.012);
     if(radius){fitted.addScaledVector(direction,radius+.0025+crown+fold);fittedCount++;}
     fitted.applyMatrix4(inverse);position.push(...fitted.toArray());
